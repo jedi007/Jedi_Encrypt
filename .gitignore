@@ -38,3 +38,11 @@ tmp/res_res.o
 tmp/systemsetform.o
 tmp/ui_mainwindow.h
 tmp/ui_systemsetform.h
+Makefile
+Makefile
+Makefile.Debug
+Makefile.Release
+object_script.Jedi_Encrypt.Debug
+object_script.Jedi_Encrypt.Release
+UserfileDirinfo.dat
+UseroutfileDirinfo.dat
