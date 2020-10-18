@@ -18,11 +18,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    models/myfilesystemmodel.cpp
+    models/myfilesystemmodel.cpp \
+    models/sysconfig.cpp
 
 HEADERS += \
     mainwindow.h \
-    models/myfilesystemmodel.h
+    models/myfilesystemmodel.h \
+    models/sysconfig.h
 
 FORMS += \
     mainwindow.ui
