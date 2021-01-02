@@ -20,6 +20,12 @@ public:
 private slots:
     void on_pushButton_import_dir_clicked();
 
+    void on_pushButton_encrypt_dir_clicked();
+
+    void on_pushButton_dencrypt_dir_clicked();
+
+    void on_pushButton_import_file_clicked();
+
 private:
     Ui::MainWindow *ui;
 

@@ -82,3 +82,12 @@ QVariant MyFileSystemModel::headerData(int section, Qt::Orientation orientation,
     }
     return QVariant();
 }
+
+QString MyFileSystemModel::path(const QModelIndex &index)
+{
+    qDebug()<<"MyFileSystemModel::path called"<<endl;
+
+
+
+    return QFileSystemModel::data(index,Qt::DisplayRole).toString();
+}

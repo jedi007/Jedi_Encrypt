@@ -10,6 +10,8 @@ CONFIG += c++11
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
+INCLUDEPATH += models
+
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
@@ -18,13 +20,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    models/myfilesystemmodel.cpp \
-    models/sysconfig.cpp
+    models/filetools.cpp \
+    models/myfilesystemmodel.cpp
 
 HEADERS += \
     mainwindow.h \
-    models/myfilesystemmodel.h \
-    models/sysconfig.h
+    models/filetools.h \
+    models/myfilesystemmodel.h
 
 FORMS += \
     mainwindow.ui

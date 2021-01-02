@@ -18,6 +18,8 @@ public:
     int columnCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+
+    QString path(const QModelIndex &index);
 };
 
 #endif // MYFILESYSTEMMODELMY_H
