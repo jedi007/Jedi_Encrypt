@@ -64,6 +64,8 @@ void FileTools::deleteDir(QString strDirName)
 
 void FileTools::encryptDirnames(QString strDirName)
 {
+    qDebug()<<"encryptDirnames called: "<<strDirName<<endl;
+
     QFileInfo finfo(strDirName);
 
     QString basename = finfo.baseName();
@@ -78,26 +80,47 @@ void FileTools::encryptDirnames(QString strDirName)
     if(finfo.isDir())
     {
         QDir dir(strDirName);
-        bool ok = dir.rename( strDirName, QString("%1/jedi_encrypt_%2")
-                                            .arg(finfo.absoluteDir().path())
-                                            .arg( QString(newname.toHex()) ) );
+        QString newnamepath = QString("%1/jedi_encrypt_%2")
+                .arg(finfo.absoluteDir().path())
+                .arg( QString(newname.toHex()) );
+        bool ok = dir.rename( strDirName, newnamepath );
 
-        qDebug()<<"encrypt "<<ok<<endl;
+        if(!ok)
+        {
+            qDebug()<<"rename to "<<newnamepath<<"  failed"<<endl;
+            return;
+        }
+
+        QDir newdir(newnamepath);
+        QStringList listDir  = newdir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+        QStringList listFile = newdir.entryList(QDir::Files, QDir::Name);
+
+        foreach (QString strFileName, listFile)
+        {
+
+            FileTools::encryptDirnames(newnamepath+"/"+strFileName);
+        }
+
+        foreach (QString strSubDir, listDir)
+        {
+            FileTools::encryptDirnames(newnamepath+"/"+strSubDir);
+        }
     }
     else
     {
         QFile file(strDirName);
-        bool ok = file.rename( strDirName, QString("%1/jedi_encrypt_%2.%3")
-                                            .arg(finfo.absoluteDir().path())
-                                            .arg( QString(newname.toHex()) )
-                                            .arg(finfo.suffix()) );
-
-        qDebug()<<"encrypt "<<ok<<endl;
+        QString newnamepath = QString("%1/jedi_encrypt_%2.%3")
+                .arg(finfo.absoluteDir().path())
+                .arg( QString(newname.toHex()) )
+                .arg(finfo.suffix());
+        file.rename( strDirName, newnamepath );
     }
 }
 
 void FileTools::decryptDirnames(QString strDirName)
 {
+    qDebug()<<"decryptDirnames called: "<<strDirName<<endl;
+
     QFileInfo finfo(strDirName);
 
     QString basename = finfo.baseName();
@@ -119,27 +142,42 @@ void FileTools::decryptDirnames(QString strDirName)
     {
         newname.append( bytes.at(i)^key.toLocal8Bit().at(i%key.size()) );
     }
-    qDebug()<<"QString::fromLocal8Bit(newname): "<<QString::fromLocal8Bit(newname)<<endl;
-
-
-
 
     if(finfo.isDir())
     {
         QDir dir(strDirName);
-        bool ok = dir.rename( strDirName, QString("%1/%2")
-                                            .arg(finfo.absoluteDir().path())
-                                            .arg( QString::fromLocal8Bit(newname) ) );
-        qDebug()<<"decrypt "<<ok<<endl;
+        QString newnamepath = QString("%1/%2")
+                .arg(finfo.absoluteDir().path())
+                .arg( QString::fromLocal8Bit(newname) );
+        bool ok = dir.rename( strDirName,  newnamepath);
+        if(!ok)
+        {
+            qDebug()<<"rename to "<<newnamepath<<"  failed"<<endl;
+            return;
+        }
+
+        QDir newdir(newnamepath);
+        QStringList listDir  = newdir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+        QStringList listFile = newdir.entryList(QDir::Files, QDir::Name);
+
+        foreach (QString strFileName, listFile)
+        {
+            FileTools::decryptDirnames(newnamepath+"/"+strFileName);
+        }
+
+        foreach (QString strSubDir, listDir)
+        {
+            FileTools::decryptDirnames(newnamepath+"/"+strSubDir);
+        }
+
     }
     else
     {
         QFile file(strDirName);
-        bool ok = file.rename( strDirName, QString("%1/%2.%3")
+        file.rename( strDirName, QString("%1/%2.%3")
                                             .arg(finfo.absoluteDir().path())
                                             .arg( QString::fromLocal8Bit(newname) )
                                             .arg(finfo.suffix()));
-        qDebug()<<"decrypt "<<ok<<endl;
     }
 }
 
