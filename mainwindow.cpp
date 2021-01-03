@@ -12,6 +12,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    statusModel = new EncryptListModel(this);
+    ui->tableView->setModel(statusModel);
+
     initMymolde();
 
     resize(1280,800);
@@ -98,6 +101,7 @@ void MainWindow::initMymolde()
 
         if(current_path.isEmpty()) return;
 
+        statusModel->setPath(current_path);
         qDebug()<<"current_path: "<<current_path<<endl;
     });
 }

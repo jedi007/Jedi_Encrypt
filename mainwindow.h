@@ -3,7 +3,8 @@
 
 #include <QMainWindow>
 
-#include "./models/myfilesystemmodel.h"
+#include "myfilesystemmodel.h"
+#include "encryptlistmodel.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -30,6 +31,7 @@ private:
     Ui::MainWindow *ui;
 
     MyFileSystemModel* myModel = nullptr;
+    EncryptListModel* statusModel = nullptr;
 
     void initMymolde();
 };

@@ -20,11 +20,13 @@ INCLUDEPATH += models
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    models/encryptlistmodel.cpp \
     models/filetools.cpp \
     models/myfilesystemmodel.cpp
 
 HEADERS += \
     mainwindow.h \
+    models/encryptlistmodel.h \
     models/filetools.h \
     models/myfilesystemmodel.h
 
