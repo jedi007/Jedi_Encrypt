@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     initMymolde();
 
-    resize(1280,800);
+    resize(1366,768);
 
     ui->splitter->setStretchFactor(0, 2);
     ui->splitter->setStretchFactor(1, 4);

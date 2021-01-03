@@ -187,7 +187,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QTableView" name="tableView">
+         <widget class="StatusView" name="tableView">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>10</horstretch>
@@ -252,6 +252,13 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>StatusView</class>
+   <extends>QTableView</extends>
+   <header>statusview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

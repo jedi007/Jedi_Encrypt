@@ -22,13 +22,15 @@ SOURCES += \
     mainwindow.cpp \
     models/encryptlistmodel.cpp \
     models/filetools.cpp \
-    models/myfilesystemmodel.cpp
+    models/myfilesystemmodel.cpp \
+    statusview.cpp
 
 HEADERS += \
     mainwindow.h \
     models/encryptlistmodel.h \
     models/filetools.h \
-    models/myfilesystemmodel.h
+    models/myfilesystemmodel.h \
+    statusview.h
 
 FORMS += \
     mainwindow.ui
