@@ -65,22 +65,32 @@ void FileTools::deleteDir(QString strDirName)
 void FileTools::encryptDirnames(QString strDirName)
 {
     QFileInfo finfo(strDirName);
+
+    QString basename = finfo.baseName();
+    QString key = "super";
+    QByteArray newname;
+    for(int i=0;i<basename.toLocal8Bit().size();i++ )
+    {
+        newname.append( basename.toLocal8Bit().at(i)^key.toLocal8Bit().at(i%key.size()) );
+    }
+
+
     if(finfo.isDir())
     {
-        QString basename = finfo.baseName();
-        QString key = "super";
-        QByteArray newname;
-        for(int i=0;i<basename.toLocal8Bit().size();i++ )
-        {
-            newname.append( basename.toLocal8Bit().at(i)^key.toLocal8Bit().at(i%key.size()) );
-        }
-
         QDir dir(strDirName);
-
         bool ok = dir.rename( strDirName, QString("%1/jedi_encrypt_%2")
                                             .arg(finfo.absoluteDir().path())
                                             .arg( QString(newname.toHex()) ) );
 
+        qDebug()<<"encrypt "<<ok<<endl;
+    }
+    else
+    {
+        QFile file(strDirName);
+        bool ok = file.rename( strDirName, QString("%1/jedi_encrypt_%2.%3")
+                                            .arg(finfo.absoluteDir().path())
+                                            .arg( QString(newname.toHex()) )
+                                            .arg(finfo.suffix()) );
 
         qDebug()<<"encrypt "<<ok<<endl;
     }
@@ -89,36 +99,46 @@ void FileTools::encryptDirnames(QString strDirName)
 void FileTools::decryptDirnames(QString strDirName)
 {
     QFileInfo finfo(strDirName);
+
+    QString basename = finfo.baseName();
+
+    QRegExp rx("^jedi_encrypt_.*");
+    if( rx.exactMatch(basename) )
+    {
+        qDebug()<<"匹配"<<endl;
+        basename = basename.replace("jedi_encrypt_","");
+    } else {
+        qDebug()<<"不匹配"<<endl;
+        return;
+    }
+
+    QByteArray bytes = FileTools::HexStringToByteArray( basename );
+    QString key = "super";
+    QByteArray newname;
+    for(int i=0;i<bytes.size();i++ )
+    {
+        newname.append( bytes.at(i)^key.toLocal8Bit().at(i%key.size()) );
+    }
+    qDebug()<<"QString::fromLocal8Bit(newname): "<<QString::fromLocal8Bit(newname)<<endl;
+
+
+
+
     if(finfo.isDir())
     {
-        QString basename = finfo.baseName();
-
-        QRegExp rx("^jedi_encrypt_.*");
-        if( rx.exactMatch(basename) )
-        {
-            qDebug()<<"匹配"<<endl;
-            basename = basename.replace("jedi_encrypt_","");
-        } else {
-            qDebug()<<"不匹配"<<endl;
-            return;
-        }
-
-        QByteArray bytes = FileTools::HexStringToByteArray( basename );
-        QString key = "super";
-        QByteArray newname;
-        for(int i=0;i<bytes.size();i++ )
-        {
-            newname.append( bytes.at(i)^key.toLocal8Bit().at(i%key.size()) );
-        }
-        qDebug()<<"QString::fromLocal8Bit(newname): "<<QString::fromLocal8Bit(newname)<<endl;
-
         QDir dir(strDirName);
-
         bool ok = dir.rename( strDirName, QString("%1/%2")
                                             .arg(finfo.absoluteDir().path())
                                             .arg( QString::fromLocal8Bit(newname) ) );
-
-
+        qDebug()<<"decrypt "<<ok<<endl;
+    }
+    else
+    {
+        QFile file(strDirName);
+        bool ok = file.rename( strDirName, QString("%1/%2.%3")
+                                            .arg(finfo.absoluteDir().path())
+                                            .arg( QString::fromLocal8Bit(newname) )
+                                            .arg(finfo.suffix()));
         qDebug()<<"decrypt "<<ok<<endl;
     }
 }
