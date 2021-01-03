@@ -50,15 +50,18 @@ QVariant MyFileSystemModel::data(const QModelIndex &index, int role) const
     {
         if(finfo.isDir())
         {
-            QString filename = finfo.baseName();
+            QString file_path = filePath(index);
+            QString filename = file_path.split("/").last();
+
             if(filename.isEmpty())
                 filename = finfo.absolutePath().replace("/","");
+
             return filename;
         }
         else if (finfo.isFile())
         {
-            QString filename = filePath(index);
-            return filename.split("/").last();
+            QString file_path = filePath(index);
+            return file_path.split("/").last();
         }
     }
     else if(index.column() == 1)

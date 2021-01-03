@@ -68,13 +68,12 @@ QString FileTools::encryptDirnames(QString strDirName)
 
     QFileInfo finfo(strDirName);
 
-    QString basename = finfo.baseName();
-    if(finfo.isFile())
+    QString basename = strDirName.split("/").last();
+    if(finfo.isFile() && basename.lastIndexOf('.')<basename.size())
     {
-        basename = strDirName.split("/").last();
-        if(basename.lastIndexOf('.')<basename.size())
-            basename = basename.left(basename.lastIndexOf('.'));
+        basename = basename.left(basename.lastIndexOf('.'));
     }
+    if( basename.isEmpty() ) return strDirName;
 
     QString key = "super";
     QByteArray newname;
