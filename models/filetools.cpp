@@ -69,6 +69,13 @@ QString FileTools::encryptDirnames(QString strDirName)
     QFileInfo finfo(strDirName);
 
     QString basename = finfo.baseName();
+    if(finfo.isFile())
+    {
+        basename = strDirName.split("/").last();
+        if(basename.lastIndexOf('.')<basename.size())
+            basename = basename.left(basename.lastIndexOf('.'));
+    }
+
     QString key = "super";
     QByteArray newname;
     for(int i=0;i<basename.toLocal8Bit().size();i++ )
@@ -91,8 +98,6 @@ QString FileTools::encryptDirnames(QString strDirName)
             return strDirName;
         }
 
-        qDebug()<<"rename to "<<newnamepath<<"  successed"<<endl;
-
         QDir newdir(newnamepath);
         QStringList listDir  = newdir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
         QStringList listFile = newdir.entryList(QDir::Files, QDir::Name);
@@ -108,7 +113,7 @@ QString FileTools::encryptDirnames(QString strDirName)
             FileTools::encryptDirnames(newnamepath+"/"+strSubDir);
         }
     }
-    else
+    else if(finfo.isFile())
     {
         QFile file(strDirName);
         newnamepath = QString("%1/jedi_encrypt_%2.%3")
