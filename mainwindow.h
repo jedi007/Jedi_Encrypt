@@ -30,5 +30,7 @@ private:
     Ui::MainWindow *ui;
 
     MyFileSystemModel* myModel = nullptr;
+
+    void initMymolde();
 };
 #endif // MAINWINDOW_H

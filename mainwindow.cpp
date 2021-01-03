@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QFileDialog>
+
 #include "filetools.h"
 #include <QDebug>
 
@@ -10,17 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    myModel = new MyFileSystemModel(this);
-    QString appPath = QApplication::applicationDirPath();
-    myModel->setRootPath(appPath);
-
-
-
-    ui->treeView->setModel( myModel );
-    //ui->treeView->setCurrentIndex( myModel->index(appPath) );
-    //ui->treeView->setRootIndex( myModel->index(appPath) );
-
-    ui->treeView->setRootIndex( myModel->index("E:/加密测试") );
+    initMymolde();
 
     resize(1280,800);
 
@@ -37,16 +29,23 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_import_dir_clicked()
 {
-    //test=================================================
+    QString srcDirPath = QFileDialog::getExistingDirectory(
+               this, "choose src Directory",
+                "/");
 
-    QString str = "subsubdir测试 - 副本 (3)";
-    QString hexstr = str.toLocal8Bit().toHex();
+    if (srcDirPath.isEmpty())
+    {
+        return;
+    }
+    else
+    {
+        qDebug() << "srcDirPath=" << srcDirPath;
+        srcDirPath += "/";
+    }
 
-    qDebug()<<"hexstr: "<<hexstr<<endl;
+    ui->treeView->setRootIndex( myModel->index(srcDirPath) );
 
-    QString algstr = QString::fromLocal8Bit( FileTools::HexStringToByteArray(hexstr) );
 
-    qDebug()<<"algstr: "<<algstr<<endl;
 }
 
 void MainWindow::on_pushButton_encrypt_dir_clicked()
@@ -56,7 +55,12 @@ void MainWindow::on_pushButton_encrypt_dir_clicked()
     if(current_path.isEmpty())
         current_path = myModel->filePath(ui->treeView->rootIndex());
 
-    FileTools::encryptDirnames( current_path );
+    delete myModel;
+
+    QString newnamepath = FileTools::encryptDirnames( current_path );
+
+    initMymolde();
+    ui->treeView->setCurrentIndex( myModel->index(newnamepath) );
 }
 
 void MainWindow::on_pushButton_dencrypt_dir_clicked()
@@ -66,10 +70,26 @@ void MainWindow::on_pushButton_dencrypt_dir_clicked()
     if(current_path.isEmpty())
         current_path = myModel->filePath(ui->treeView->rootIndex());
 
-    FileTools::decryptDirnames( current_path );
+    delete myModel;
+
+    QString newnamepath = FileTools::decryptDirnames( current_path );
+
+    initMymolde();
+    ui->treeView->setCurrentIndex( myModel->index(newnamepath) );
 }
 
 void MainWindow::on_pushButton_import_file_clicked()
 {
 
+}
+
+void MainWindow::initMymolde()
+{
+    myModel = new MyFileSystemModel(this);
+    QString appPath = QApplication::applicationDirPath();
+    myModel->setRootPath(appPath);
+
+    ui->treeView->setModel( myModel );
+    ui->treeView->setCurrentIndex( myModel->index(appPath) );
+    //ui->treeView->setRootIndex( myModel->index(appPath) );
 }

@@ -11,9 +11,9 @@ public:
     //删除文件夹
     static void deleteDir(QString strDirName);
 
-    static void encryptDirnames(QString strDirName);
+    static QString encryptDirnames(QString strDirName);
 
-    static void decryptDirnames(QString strDirName);
+    static QString decryptDirnames(QString strDirName);
 
     static QByteArray HexStringToByteArray(QString HexString);
 private:

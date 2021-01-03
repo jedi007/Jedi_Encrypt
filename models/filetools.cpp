@@ -62,7 +62,7 @@ void FileTools::deleteDir(QString strDirName)
     //dir.mkdir(strDirName);
 }
 
-void FileTools::encryptDirnames(QString strDirName)
+QString FileTools::encryptDirnames(QString strDirName)
 {
     qDebug()<<"encryptDirnames called: "<<strDirName<<endl;
 
@@ -76,20 +76,22 @@ void FileTools::encryptDirnames(QString strDirName)
         newname.append( basename.toLocal8Bit().at(i)^key.toLocal8Bit().at(i%key.size()) );
     }
 
-
+    QString newnamepath;
     if(finfo.isDir())
     {
         QDir dir(strDirName);
-        QString newnamepath = QString("%1/jedi_encrypt_%2")
+        newnamepath = QString("%1/jedi_encrypt_%2")
                 .arg(finfo.absoluteDir().path())
-                .arg( QString(newname.toHex()) );
+                .arg( QString(newname.toHex()) ).replace("//","/");
         bool ok = dir.rename( strDirName, newnamepath );
 
         if(!ok)
         {
             qDebug()<<"rename to "<<newnamepath<<"  failed"<<endl;
-            return;
+            return strDirName;
         }
+
+        qDebug()<<"rename to "<<newnamepath<<"  successed"<<endl;
 
         QDir newdir(newnamepath);
         QStringList listDir  = newdir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
@@ -109,15 +111,16 @@ void FileTools::encryptDirnames(QString strDirName)
     else
     {
         QFile file(strDirName);
-        QString newnamepath = QString("%1/jedi_encrypt_%2.%3")
+        newnamepath = QString("%1/jedi_encrypt_%2.%3")
                 .arg(finfo.absoluteDir().path())
                 .arg( QString(newname.toHex()) )
                 .arg(finfo.suffix());
         file.rename( strDirName, newnamepath );
     }
+    return newnamepath;
 }
 
-void FileTools::decryptDirnames(QString strDirName)
+QString FileTools::decryptDirnames(QString strDirName)
 {
     qDebug()<<"decryptDirnames called: "<<strDirName<<endl;
 
@@ -132,7 +135,7 @@ void FileTools::decryptDirnames(QString strDirName)
         basename = basename.replace("jedi_encrypt_","");
     } else {
         qDebug()<<"不匹配"<<endl;
-        return;
+        return finfo.path();
     }
 
     QByteArray bytes = FileTools::HexStringToByteArray( basename );
@@ -143,18 +146,20 @@ void FileTools::decryptDirnames(QString strDirName)
         newname.append( bytes.at(i)^key.toLocal8Bit().at(i%key.size()) );
     }
 
+    QString newnamepath;
     if(finfo.isDir())
     {
         QDir dir(strDirName);
-        QString newnamepath = QString("%1/%2")
+        newnamepath = QString("%1/%2")
                 .arg(finfo.absoluteDir().path())
-                .arg( QString::fromLocal8Bit(newname) );
+                .arg( QString::fromLocal8Bit(newname) ).replace("//","/");
         bool ok = dir.rename( strDirName,  newnamepath);
         if(!ok)
         {
             qDebug()<<"rename to "<<newnamepath<<"  failed"<<endl;
-            return;
+            return strDirName;
         }
+        qDebug()<<"rename to "<<newnamepath<<"  successed"<<endl;
 
         QDir newdir(newnamepath);
         QStringList listDir  = newdir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
@@ -174,11 +179,15 @@ void FileTools::decryptDirnames(QString strDirName)
     else
     {
         QFile file(strDirName);
-        file.rename( strDirName, QString("%1/%2.%3")
-                                            .arg(finfo.absoluteDir().path())
-                                            .arg( QString::fromLocal8Bit(newname) )
-                                            .arg(finfo.suffix()));
+        newnamepath = QString("%1/%2.%3")
+                .arg(finfo.absoluteDir().path())
+                .arg( QString::fromLocal8Bit(newname) )
+                .arg(finfo.suffix());
+
+        file.rename( strDirName,newnamepath );
     }
+
+    return newnamepath;
 }
 
 QByteArray FileTools::HexStringToByteArray(QString HexString)
