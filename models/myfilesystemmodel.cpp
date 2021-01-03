@@ -48,13 +48,18 @@ QVariant MyFileSystemModel::data(const QModelIndex &index, int role) const
     QFileInfo finfo = fileInfo(index);
     if(index.column() == 0)
     {
-        QString filename = finfo.baseName();
-        if(filename.isEmpty())
-            filename = finfo.absolutePath().replace("/","");
-        else if( !finfo.suffix().isEmpty() )
-            filename += "."+finfo.suffix();
-
-        return filename;
+        if(finfo.isDir())
+        {
+            QString filename = finfo.baseName();
+            if(filename.isEmpty())
+                filename = finfo.absolutePath().replace("/","");
+            return filename;
+        }
+        else if (finfo.isFile())
+        {
+            QString filename = filePath(index);
+            return filename.split("/").last();
+        }
     }
     else if(index.column() == 1)
     {

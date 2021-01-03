@@ -92,4 +92,12 @@ void MainWindow::initMymolde()
     ui->treeView->setModel( myModel );
     ui->treeView->setCurrentIndex( myModel->index(appPath) );
     //ui->treeView->setRootIndex( myModel->index(appPath) );
+
+    connect( ui->treeView,&QTreeView::clicked,[=](const QModelIndex &index){
+        QString current_path = myModel->filePath(index);
+
+        if(current_path.isEmpty()) return;
+
+        qDebug()<<"current_path: "<<current_path<<endl;
+    });
 }
