@@ -105,3 +105,13 @@ void MainWindow::initMymolde()
         qDebug()<<"current_path: "<<current_path<<endl;
     });
 }
+
+void MainWindow::on_pushButton_encrypt_clicked()
+{
+
+}
+
+void MainWindow::on_pushButton_decrypt_clicked()
+{
+
+}

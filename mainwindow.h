@@ -27,6 +27,10 @@ private slots:
 
     void on_pushButton_import_file_clicked();
 
+    void on_pushButton_encrypt_clicked();
+
+    void on_pushButton_decrypt_clicked();
+
 private:
     Ui::MainWindow *ui;
 
