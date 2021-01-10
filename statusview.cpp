@@ -6,7 +6,10 @@
 
 StatusView::StatusView(QWidget *parent):QTableView(parent)
 {
+    setColumnWidth(1,100);
 
+    setSelectionMode(QTableView::SingleSelection);
+    setSelectionBehavior(QAbstractItemView::SelectRows);//设置选中模式为选中行
 }
 
 void StatusView::resizeEvent(QResizeEvent *event)
@@ -17,5 +20,7 @@ void StatusView::resizeEvent(QResizeEvent *event)
 
     horizontalHeader()->setSectionResizeMode(0,QHeaderView::Stretch);
 
-    setColumnWidth(1,100);
+    //setColumnWidth(1,100);
+
+    QTableView::resizeEvent(event);
 }
