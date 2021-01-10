@@ -2,13 +2,14 @@
 #define ENCRYPTLISTMODEL_H
 
 #include <QAbstractTableModel>
+#include <QUuid>
 
 class EncryptState
 {
 public:
     QString filename;
     double percent = 0;
-
+    QUuid id;
 };
 
 class EncryptListModel : public QAbstractTableModel

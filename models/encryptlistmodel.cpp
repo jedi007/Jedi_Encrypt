@@ -81,10 +81,11 @@ void EncryptListModel::readPath(QString path)
     QFileInfo finfo(path);
     if( finfo.isFile() )
     {
-        qDebug()<<path<<" is file"<<endl;
         EncryptState state;
         state.filename = path;
+        state.id = QUuid::createUuid();//生成唯一码
         status.append(state);
+
         return;
     }
     else if (finfo.isDir())
