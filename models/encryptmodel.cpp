@@ -49,6 +49,9 @@ void EncryptModel::encypt_alg()
         state.state_str = "文件打开失败";
         return;
     }
+
+
+
 }
 
 void EncryptModel::decypt_alg()

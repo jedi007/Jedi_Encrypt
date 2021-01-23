@@ -109,6 +109,8 @@ void MainWindow::on_pushButton_encrypt_clicked()
     QList<EncryptState>& status = statusModel->status;
     for(int i=0;i<status.size();i++)
     {
+       qDebug()<<" status[i].filename:"<<status[i].filename<<endl;
+
         EncryptModel* encrypt = new EncryptModel(status[i]);
 
         QThreadPool::globalInstance()->start(encrypt); // 提交任务给线程池，在线程池中执行
