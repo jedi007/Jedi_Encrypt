@@ -14,8 +14,12 @@ public:
 
     virtual void run() override;
 
+    static int S[8][8];
 private:
     EncryptState& state;
+
+    void encypt_alg();
+    void decypt_alg();
 };
 
 #endif // ENCRYPTMODEL_H

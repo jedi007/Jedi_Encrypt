@@ -17,7 +17,7 @@ int EncryptListModel::rowCount(const QModelIndex &parent) const
 
 int EncryptListModel::columnCount(const QModelIndex &parent) const
 {
-    return 2;
+    return 3;
 }
 
 QVariant EncryptListModel::data(const QModelIndex &index, int role) const
@@ -40,6 +40,11 @@ QVariant EncryptListModel::data(const QModelIndex &index, int role) const
                 return QString("%1%").arg(status.at(row).percent);
             }
             break;
+            case 2:
+            {
+                return status.at(row).state_str;
+            }
+            break;
         }
         break;
     }
@@ -57,6 +62,9 @@ QVariant EncryptListModel::headerData(int section, Qt::Orientation orientation, 
                 break;
             case 1:
                 return "完成率";
+                break;
+            case 2:
+                return "提示信息";
                 break;
             default:
                 return QVariant();
