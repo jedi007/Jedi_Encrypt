@@ -2,8 +2,10 @@
 #include "ui_mainwindow.h"
 
 #include <QFileDialog>
+#include <QThreadPool>
 
 #include "filetools.h"
+#include "encryptmodel.h"
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -96,21 +98,34 @@ void MainWindow::initMymolde()
     ui->treeView->setCurrentIndex( myModel->index(appPath) );
     //ui->treeView->setRootIndex( myModel->index(appPath) );
 
-    connect( ui->treeView,&QTreeView::clicked,[=](const QModelIndex &index){
-        QString current_path = myModel->filePath(index);
-
-        if(current_path.isEmpty()) return;
-
-        statusModel->setPath(current_path);
-    });
 }
 
 void MainWindow::on_pushButton_encrypt_clicked()
 {
+    QThreadPool::globalInstance()->setMaxThreadCount(6);
+    int maxsize = QThreadPool::globalInstance()->maxThreadCount();
+    qDebug()<<"maxsize is "<<maxsize<<endl;
+
+    QList<EncryptState>& status = statusModel->status;
+    for(int i=0;i<status.size();i++)
+    {
+        EncryptModel* encrypt = new EncryptModel(status[i]);
+
+        QThreadPool::globalInstance()->start(encrypt); // 提交任务给线程池，在线程池中执行
+    }
 
 }
 
 void MainWindow::on_pushButton_decrypt_clicked()
 {
 
+}
+
+void MainWindow::on_treeView_clicked(const QModelIndex &index)
+{
+    QString current_path = myModel->filePath(index);
+
+    if(current_path.isEmpty()) return;
+
+    statusModel->setPath(current_path);
 }

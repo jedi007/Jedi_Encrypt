@@ -9,7 +9,10 @@ class StatusView : public QTableView
 public:
     StatusView(QWidget *parent = nullptr);
 
-    virtual void resizeEvent(QResizeEvent *event);
+    virtual void resizeEvent(QResizeEvent *event) override;
+
+    int timerID;
+    virtual void timerEvent(QTimerEvent *event) override;
 };
 
 #endif // STATUSVIEW_H

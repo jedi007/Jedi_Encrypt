@@ -10,6 +10,8 @@ public:
     QString filename;
     double percent = 0;
     QUuid id;
+    bool over = false;
+    QString state_str;
 };
 
 class EncryptListModel : public QAbstractTableModel
@@ -31,7 +33,6 @@ public:
 
     QList<EncryptState> status;
 
-private:
     void refresh();
 };
 

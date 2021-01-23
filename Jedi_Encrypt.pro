@@ -21,6 +21,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     models/encryptlistmodel.cpp \
+    models/encryptmodel.cpp \
     models/filetools.cpp \
     models/myfilesystemmodel.cpp \
     statusview.cpp
@@ -28,6 +29,7 @@ SOURCES += \
 HEADERS += \
     mainwindow.h \
     models/encryptlistmodel.h \
+    models/encryptmodel.h \
     models/filetools.h \
     models/myfilesystemmodel.h \
     statusview.h
