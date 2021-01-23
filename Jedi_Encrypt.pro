@@ -24,7 +24,8 @@ SOURCES += \
     models/encryptmodel.cpp \
     models/filetools.cpp \
     models/myfilesystemmodel.cpp \
-    statusview.cpp
+    statusview.cpp \
+    systemconfig.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -32,7 +33,8 @@ HEADERS += \
     models/encryptmodel.h \
     models/filetools.h \
     models/myfilesystemmodel.h \
-    statusview.h
+    statusview.h \
+    systemconfig.h
 
 FORMS += \
     mainwindow.ui

@@ -33,6 +33,8 @@ private slots:
 
     void on_treeView_clicked(const QModelIndex &index);
 
+    void on_lineEdit_encrypt_key_textChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
 

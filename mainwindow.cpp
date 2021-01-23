@@ -8,6 +8,8 @@
 #include "encryptmodel.h"
 #include <QDebug>
 
+#include "systemconfig.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -130,4 +132,11 @@ void MainWindow::on_treeView_clicked(const QModelIndex &index)
     if(current_path.isEmpty()) return;
 
     statusModel->setPath(current_path);
+}
+
+void MainWindow::on_lineEdit_encrypt_key_textChanged(const QString &arg1)
+{
+    qDebug()<<" key change to "<< arg1 <<endl;
+    SystemConfig::getinstance()->key = arg1;
+
 }
