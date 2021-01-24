@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QDateTime>
 #include <QFile>
+#include <QFileInfo>
 #include <QCryptographicHash>
 
 #include "systemconfig.h"
@@ -18,7 +19,7 @@ void EncryptModel::run()
 {
     qDebug()<<"state.id is "<< state.id.data1 <<" thread ID is  "<<QThread::currentThreadId()<<endl;
     state.state_str = "计算中...";
-    for(int i=0;i<=20;i++)
+    for(int i=0;i<=10;i++)
     {
         QThread::msleep(100);
         state.percent = i;
@@ -47,7 +48,18 @@ void EncryptModel::encypt_alg()
         return;
     }
 
-    QFile outfile(state.filename+".jcpt");
+    QFileInfo finfo(state.filename);
+    qDebug()<<" finfo.path(): "<<finfo.path()<<endl;
+
+    QString filename = state.filename.split("/").last();
+    QStringList namelist = filename.split(".");
+    if(!finfo.suffix().isEmpty() && namelist.size() > 1 )
+        namelist.removeLast();
+    namelist.append("jcpt");
+    QString outfilename =  QString("%1/%2").arg(finfo.path()).arg(namelist.join("."));
+    qDebug()<<"outfilename: "<<outfilename;
+
+    QFile outfile(outfilename);
     if( !outfile.open(QFile::WriteOnly) )
     {
         state.over = true;
