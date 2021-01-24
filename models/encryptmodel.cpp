@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QCryptographicHash>
+#include <QDataStream>
 
 #include "systemconfig.h"
 #include "jcryptstrategy.h"
@@ -19,7 +20,7 @@ void EncryptModel::run()
 {
     qDebug()<<"state.id is "<< state.id.data1 <<" thread ID is  "<<QThread::currentThreadId()<<endl;
     state.state_str = "计算中...";
-    for(int i=0;i<=10;i++)
+    for(int i=0;i<=3;i++)
     {
         QThread::msleep(100);
         state.percent = i;
@@ -59,6 +60,13 @@ void EncryptModel::encypt_alg()
     QString outfilename =  QString("%1/%2").arg(finfo.path()).arg(namelist.join("."));
     qDebug()<<"outfilename: "<<outfilename;
 
+    QByteArray head;
+    QDataStream stream( &head , QIODevice::WriteOnly);
+    stream<<filename;
+    stream<<finfo.size();
+    head.resize(1024);
+
+
     QFile outfile(outfilename);
     if( !outfile.open(QFile::WriteOnly) )
     {
@@ -66,6 +74,8 @@ void EncryptModel::encypt_alg()
         state.state_str = "输出文件打开失败";
         return;
     }
+
+    outfile.write(head);
 
     int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
     JCryptStrategy_controller strategy(SystemConfig::getinstance()->key,false,lv);
@@ -101,7 +111,19 @@ void EncryptModel::decypt_alg()
         return;
     }
 
-    QFile outfile(state.filename+".jcpt");
+    QString outfilename;
+    qint64 filesize = 0;
+
+    QByteArray head = infile.read(1024);
+    QDataStream stream( &head , QIODevice::ReadOnly);
+    stream>>outfilename;
+    stream>>filesize;
+
+    qDebug()<<"outfilename: "<<outfilename<<endl;
+    qDebug()<<"filesize: "<<filesize;
+
+    QFileInfo finfo(state.filename);
+    QFile outfile( QString("%1/decrypt_%2").arg(finfo.path()).arg(outfilename) );
     if( !outfile.open(QFile::WriteOnly) )
     {
         state.over = true;
