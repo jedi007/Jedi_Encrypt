@@ -105,6 +105,9 @@ void EncryptModel::encypt_alg()
 
     fclose(infile);
     fclose(outfile);
+
+    state.over = true;
+    state.state_str = "完成";
 }
 
 void EncryptModel::decypt_alg()
@@ -173,4 +176,7 @@ void EncryptModel::decypt_alg()
 
     fclose(infile);
     fclose(outfile);
+
+    state.over = true;
+    state.state_str = "完成";
 }
