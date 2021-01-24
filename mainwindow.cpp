@@ -81,7 +81,7 @@ void MainWindow::initMymolde()
 
 void MainWindow::on_pushButton_encrypt_clicked()
 {
-    QThreadPool::globalInstance()->setMaxThreadCount(6);
+    pool.setMaxThreadCount(6);
     int maxsize = QThreadPool::globalInstance()->maxThreadCount();
     qDebug()<<"maxsize is "<<maxsize<<endl;
 
@@ -92,14 +92,14 @@ void MainWindow::on_pushButton_encrypt_clicked()
 
         EncryptModel* encrypt = new EncryptModel(status[i]);
 
-        QThreadPool::globalInstance()->start(encrypt); // 提交任务给线程池，在线程池中执行
+        pool.start(encrypt); // 提交任务给线程池，在线程池中执行
     }
 
 }
 
 void MainWindow::on_pushButton_decrypt_clicked()
 {
-    QThreadPool::globalInstance()->setMaxThreadCount(6);
+    pool.setMaxThreadCount(6);
     int maxsize = QThreadPool::globalInstance()->maxThreadCount();
     qDebug()<<"maxsize is "<<maxsize<<endl;
 
@@ -111,7 +111,7 @@ void MainWindow::on_pushButton_decrypt_clicked()
         EncryptModel* encrypt = new EncryptModel(status[i]);
         encrypt->model = 1;
 
-        QThreadPool::globalInstance()->start(encrypt); // 提交任务给线程池，在线程池中执行
+        pool.start(encrypt); // 提交任务给线程池，在线程池中执行
     }
 }
 

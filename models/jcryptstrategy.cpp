@@ -12,9 +12,9 @@ int JCryptStrategy::S[8][8] =  {{15,2,13,7,5,8,12,33},
                                  {45,60,47,38,40,51,35,54},
                                  {31,46,36,52,56,34,58,53}};
 
-JCryptStrategy::JCryptStrategy(QString t_key):key(t_key)
+JCryptStrategy::JCryptStrategy(QString t_key)
 {
-
+    memcpy(key,t_key.toUtf8().data(),16);
 }
 
 void JCryptStrategy::S8_en_block(QByteArray &block)
@@ -66,12 +66,11 @@ JCryptStrategy_low::JCryptStrategy_low(QString t_key):JCryptStrategy(t_key)
 
 }
 
-void JCryptStrategy_low::handle(QByteArray &block)
+void JCryptStrategy_low::handle(char in[8], char out[8])
 {
-    block.resize(8);
     for(int i=0;i<8;i++)
     {
-        block[i] = block.at(i) ^ key.toUtf8().at(i);
+        out[i] = in[i] ^ key[i];
     }
 }
 
@@ -80,15 +79,15 @@ JCryptStrategy_mid::JCryptStrategy_mid(QString t_key):JCryptStrategy(t_key)
 
 }
 
-void JCryptStrategy_mid::handle(QByteArray &block)
+void JCryptStrategy_mid::handle(char in[8], char out[8])
 {
-    block.resize(8);
-    for(int i=0;i<8;i++)
-    {
-        block[i] = block.at(i) ^ key.toUtf8().at(i);
-    }
+//    block.resize(8);
+//    for(int i=0;i<8;i++)
+//    {
+//        block[i] = block[i] ^ key[i];
+//    }
 
-    S8_en_block(block);
+//    S8_en_block(block);
 }
 
 JCryptStrategy_mid_de::JCryptStrategy_mid_de(QString t_key):JCryptStrategy(t_key)
@@ -96,15 +95,15 @@ JCryptStrategy_mid_de::JCryptStrategy_mid_de(QString t_key):JCryptStrategy(t_key
 
 }
 
-void JCryptStrategy_mid_de::handle(QByteArray &block)
+void JCryptStrategy_mid_de::handle(char in[8], char out[8])
 {
-    S8_de_block(block);
+//    S8_de_block(block);
 
-    block.resize(8);
-    for(int i=0;i<8;i++)
-    {
-        block[i] = block.at(i) ^ key.toUtf8().at(i);
-    }
+//    block.resize(8);
+//    for(int i=0;i<8;i++)
+//    {
+//        block[i] = block[i] ^ key[i];
+//    }
 }
 
 JCryptStrategy_controller::JCryptStrategy_controller(QString key, bool b_decrypt, int lv)
@@ -141,7 +140,7 @@ JCryptStrategy_controller::~JCryptStrategy_controller()
         delete  strategey;
 }
 
-void JCryptStrategy_controller::handler(QByteArray &block)
+void JCryptStrategy_controller::handler(char in[8], char out[8])
 {
-    strategey->handle(block);
+    strategey->handle(in,out);
 }

@@ -10,13 +10,13 @@ public:
     JCryptStrategy(QString t_key);
     virtual ~JCryptStrategy(){}
 
-    virtual void handle(QByteArray& block) = 0;
+    virtual void handle(char in[8], char out[8]) = 0;
 
 protected:
     void S8_en_block(QByteArray &block);
     void S8_de_block(QByteArray &block);
 
-    QString key;
+    char key[16];
     char tmp[64];
     static int S[8][8];
 };
@@ -27,7 +27,7 @@ public:
     JCryptStrategy_low(QString t_key);
     virtual ~JCryptStrategy_low(){}
 
-    virtual void handle(QByteArray& block);
+    virtual void handle(char in[8], char out[8]);
 };
 
 class JCryptStrategy_mid:public JCryptStrategy
@@ -36,7 +36,7 @@ public:
     JCryptStrategy_mid(QString t_key);
     virtual ~JCryptStrategy_mid(){}
 
-    virtual void handle(QByteArray& block);
+    virtual void handle(char in[8], char out[8]);
 };
 
 class JCryptStrategy_mid_de:public JCryptStrategy
@@ -45,7 +45,7 @@ public:
     JCryptStrategy_mid_de(QString t_key);
     virtual ~JCryptStrategy_mid_de(){}
 
-    virtual void handle(QByteArray& block);
+    virtual void handle(char in[8], char out[8]);
 };
 
 class JCryptStrategy_controller
@@ -53,7 +53,7 @@ class JCryptStrategy_controller
 public:
     JCryptStrategy_controller(QString key,bool b_decrypt=false,int lv=1);
     ~JCryptStrategy_controller();
-    void handler(QByteArray& block);
+    void handler(char in[8], char out[8]);
 
 private:
     JCryptStrategy* strategey = nullptr;

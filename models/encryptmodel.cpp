@@ -7,6 +7,8 @@
 #include <QFileInfo>
 #include <QCryptographicHash>
 #include <QDataStream>
+#include <QTextCodec>
+#include <iostream>
 
 #include "systemconfig.h"
 #include "jcryptstrategy.h"
@@ -30,15 +32,11 @@ void EncryptModel::run()
 
 void EncryptModel::encypt_alg()
 {
-    QFile infile(state.filename);
-    if( !infile.exists() )
-    {
-        state.over = true;
-        state.state_str = "文件不存在";
-        return;
-    }
+    FILE *infile,*outfile;
+    QTextCodec *code = QTextCodec::codecForName("System");
 
-    if( !infile.open(QFile::ReadOnly) )
+    std::string infilename = code->fromUnicode(state.filename).data();
+    if((infile = fopen(infilename.c_str(),"rb")) == NULL)
     {
         state.over = true;
         state.state_str = "输入文件打开失败";
@@ -46,87 +44,102 @@ void EncryptModel::encypt_alg()
     }
 
     QFileInfo finfo(state.filename);
-    qDebug()<<" finfo.path(): "<<finfo.path()<<endl;
-
     QString filename = state.filename.split("/").last();
     QStringList namelist = filename.split(".");
     if(!finfo.suffix().isEmpty() && namelist.size() > 1 )
         namelist.removeLast();
     namelist.append("jcpt");
-    QString outfilename =  QString("%1/%2").arg(finfo.path()).arg(namelist.join("."));
-    qDebug()<<"outfilename: "<<outfilename;
+    QString qoutfilename =  QString("%1/%2").arg(finfo.path()).arg(namelist.join("."));
+    qDebug()<<"qoutfilename: "<<qoutfilename;
 
-    QByteArray head;
-    state.filesize = finfo.size();
-    QDataStream stream( &head , QIODevice::WriteOnly);
-    stream<<filename;
-    stream<<state.filesize;
-    head.resize(1024);
-
-
-    QFile outfile(outfilename);
-    if( !outfile.open(QFile::WriteOnly) )
+    std::string outfilename = code->fromUnicode(qoutfilename).data();
+    if((outfile = fopen(outfilename.c_str(),"wb")) == NULL)
     {
+        fclose(infile);
         state.over = true;
         state.state_str = "输出文件打开失败";
         return;
     }
 
-    QDataStream instream(&infile);
-    QDataStream outstream(&outfile);
+    QByteArray head;
+    head.resize(1024);
+    state.filesize = finfo.size();
+    QDataStream stream( &head , QIODevice::WriteOnly);
+    stream<<filename;
+    stream<<state.filesize;
 
-    outfile.write(head);
-    //outstream<<head;
+    int ok = fwrite(head.data(),sizeof(char),1024,outfile);
+    qDebug()<<"write size "<<ok<<endl;
+    qDebug()<<"write data "<<head.toHex()<<endl;
 
     int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
     JCryptStrategy_controller strategy(SystemConfig::getinstance()->key,false,lv);
 
-    QByteArray bytes;
-    while (!infile.atEnd()) {
-        bytes = infile.read(8);
+    int count = 0;
+    char inBlock[8],outBlock[8];
+    while(!feof(infile))
+    {
+        //每次读8个字节，并返回成功读取的字节数
+        if((count = fread(inBlock,sizeof(char),8,infile)) == 8 )
+        {
+            strategy.handler(inBlock,outBlock);
+            fwrite(outBlock,sizeof(char),8,outfile);
+            state.oversize += 8;
+        }
+        else
+        {
+            //qDebug()<<"fread failed and read count:"<<count<<endl;
+        }
+    }
+    if(count<8&&count>0)
+    {
+        char lkey[9] = "JediEncr";
+        for( int i=0;i<count;i++ )
+        {
+            outBlock[i] = inBlock[i] ^ lkey[i];
+        }
 
-        strategy.handler(bytes);
-
-        outfile.write(bytes);
-
-        state.oversize += 8;
+        fwrite(outBlock,sizeof(char),count,outfile);
+        state.oversize += count;
     }
 
-    outfile.close();
+    fclose(infile);
+    fclose(outfile);
 }
 
 void EncryptModel::decypt_alg()
 {
-    QFile infile(state.filename);
-    if( !infile.exists() )
-    {
-        state.over = true;
-        state.state_str = "文件不存在";
-        return;
-    }
+    FILE *infile,*outfile;
+    QTextCodec *code = QTextCodec::codecForName("System");
 
-    if( !infile.open(QFile::ReadOnly) )
+    std::string infilename = code->fromUnicode(state.filename).data();
+    if((infile = fopen(infilename.c_str(),"rb")) == NULL)
     {
         state.over = true;
         state.state_str = "输入文件打开失败";
         return;
     }
 
-    QString outfilename;
-    state.filesize = 0;
-
-    QByteArray head = infile.read(1024);
+    QString qoutfilename;
+    char chead[1024];
+    fread(chead,sizeof(char),1024,infile);
+    QByteArray head;
+    head.setRawData(chead,1024);
     QDataStream stream( &head , QIODevice::ReadOnly);
-    stream>>outfilename;
+    stream>>qoutfilename;
     stream>>state.filesize;
-
-    qDebug()<<"outfilename: "<<outfilename<<endl;
-    qDebug()<<"filesize: "<<state.filesize;
+    qDebug()<<"qoutfilename: "<<qoutfilename<<endl;
+    qDebug()<<"state.filesize: "<<state.filesize<<endl;
+    qDebug()<<"read data "<<head.toHex()<<endl;
 
     QFileInfo finfo(state.filename);
-    QFile outfile( QString("%1/decrypt_%2").arg(finfo.path()).arg(outfilename) );
-    if( !outfile.open(QFile::WriteOnly) )
+    qoutfilename = QString("%1/decrypt_%2").arg(finfo.path()).arg(qoutfilename);
+    qDebug()<<"qoutfilename: "<<qoutfilename<<endl;
+    std::string outfilename = code->fromUnicode(qoutfilename).data();
+
+    if((outfile = fopen(outfilename.c_str(),"wb")) == NULL)
     {
+        fclose(infile);
         state.over = true;
         state.state_str = "输出文件打开失败";
         return;
@@ -135,22 +148,29 @@ void EncryptModel::decypt_alg()
     int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
     JCryptStrategy_controller strategy(SystemConfig::getinstance()->key,true,lv);
 
-    while (!infile.atEnd()) {
-        QByteArray bytes = infile.read(8);
-
-        strategy.handler(bytes);
-
-        if(state.filesize - state.oversize >7)
+    int count;
+    char inBlock[8],outBlock[8];
+    while(!feof(infile))
+    {
+        if((count = fread(inBlock,sizeof(char),8,infile)) == 8 )
         {
-            outfile.write(bytes);
+            strategy.handler(inBlock,outBlock);
+            fwrite(outBlock,sizeof(char),8,outfile);
             state.oversize += 8;
         }
-        else
+    }
+    if(count<8&&count>0)
+    {
+        char lkey[9] = "JediEncr";
+        for( int i=0;i<count;i++ )
         {
-            outfile.write(bytes,state.filesize-state.oversize);
-            state.oversize = state.filesize;
+            outBlock[i] = inBlock[i] ^ lkey[i];
         }
+
+        fwrite(outBlock,sizeof(char),count,outfile);
+        state.oversize += count;
     }
 
-    outfile.close();
+    fclose(infile);
+    fclose(outfile);
 }

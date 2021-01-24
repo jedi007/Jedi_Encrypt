@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QThreadPool>
 
 #include "myfilesystemmodel.h"
 #include "encryptlistmodel.h"
@@ -44,5 +45,7 @@ private:
     EncryptListModel* statusModel = nullptr;
 
     void initMymolde();
+
+    QThreadPool pool;
 };
 #endif // MAINWINDOW_H
