@@ -23,11 +23,14 @@ void EncryptModel::run()
     qDebug()<<"state.id is "<< state.id.data1 <<" thread ID is  "<<QThread::currentThreadId()<<endl;
     state.state_str = "计算中...";
 
+    QTime t = QTime::currentTime();
+    qDebug().noquote() << QString("Begin   thread %1 at %2").arg( state.id.data1 ).arg(QDateTime::currentDateTime().toString("mm:ss.z"));
     if(model == 0)
         encypt_alg();
     else
         decypt_alg();
     qDebug().noquote() << QString("End   thread %1 at %2").arg( state.id.data1 ).arg(QDateTime::currentDateTime().toString("mm:ss.z"));
+    qDebug()<<"t.elapsed(): "<<t.elapsed()<<endl;
 }
 
 void EncryptModel::encypt_alg()
@@ -50,7 +53,6 @@ void EncryptModel::encypt_alg()
         namelist.removeLast();
     namelist.append("jcpt");
     QString qoutfilename =  QString("%1/%2").arg(finfo.path()).arg(namelist.join("."));
-    qDebug()<<"qoutfilename: "<<qoutfilename;
 
     std::string outfilename = code->fromUnicode(qoutfilename).data();
     if((outfile = fopen(outfilename.c_str(),"wb")) == NULL)
@@ -69,8 +71,6 @@ void EncryptModel::encypt_alg()
     stream<<state.filesize;
 
     int ok = fwrite(head.data(),sizeof(char),1024,outfile);
-    qDebug()<<"write size "<<ok<<endl;
-    qDebug()<<"write data "<<head.toHex()<<endl;
 
     int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
     JCryptStrategy_controller strategy(SystemConfig::getinstance()->key,false,lv);
@@ -131,13 +131,9 @@ void EncryptModel::decypt_alg()
     QDataStream stream( &head , QIODevice::ReadOnly);
     stream>>qoutfilename;
     stream>>state.filesize;
-    qDebug()<<"qoutfilename: "<<qoutfilename<<endl;
-    qDebug()<<"state.filesize: "<<state.filesize<<endl;
-    qDebug()<<"read data "<<head.toHex()<<endl;
 
     QFileInfo finfo(state.filename);
     qoutfilename = QString("%1/decrypt_%2").arg(finfo.path()).arg(qoutfilename);
-    qDebug()<<"qoutfilename: "<<qoutfilename<<endl;
     std::string outfilename = code->fromUnicode(qoutfilename).data();
 
     if((outfile = fopen(outfilename.c_str(),"wb")) == NULL)
@@ -176,6 +172,8 @@ void EncryptModel::decypt_alg()
 
     fclose(infile);
     fclose(outfile);
+    delete  infile;
+    delete  outfile;
 
     state.over = true;
     state.state_str = "完成";

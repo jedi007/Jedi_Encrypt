@@ -17,7 +17,7 @@ JCryptStrategy::JCryptStrategy(QString t_key)
     memcpy(key,t_key.toUtf8().data(),16);
 }
 
-void JCryptStrategy::S8_en_block(QByteArray &block)
+void JCryptStrategy::S8_en_block(char block[8])
 {
     for(int i=0;i<8;i++)
     {
@@ -39,7 +39,7 @@ void JCryptStrategy::S8_en_block(QByteArray &block)
     }
 }
 
-void JCryptStrategy::S8_de_block(QByteArray &block)
+void JCryptStrategy::S8_de_block(char block[8])
 {
     for(int i=0;i<8;i++)
     {
@@ -81,13 +81,12 @@ JCryptStrategy_mid::JCryptStrategy_mid(QString t_key):JCryptStrategy(t_key)
 
 void JCryptStrategy_mid::handle(char in[8], char out[8])
 {
-//    block.resize(8);
-//    for(int i=0;i<8;i++)
-//    {
-//        block[i] = block[i] ^ key[i];
-//    }
+    for(int i=0;i<8;i++)
+    {
+        out[i] = in[i] ^ key[i];
+    }
 
-//    S8_en_block(block);
+    S8_en_block(out);
 }
 
 JCryptStrategy_mid_de::JCryptStrategy_mid_de(QString t_key):JCryptStrategy(t_key)
@@ -97,13 +96,12 @@ JCryptStrategy_mid_de::JCryptStrategy_mid_de(QString t_key):JCryptStrategy(t_key
 
 void JCryptStrategy_mid_de::handle(char in[8], char out[8])
 {
-//    S8_de_block(block);
+    S8_de_block(in);
 
-//    block.resize(8);
-//    for(int i=0;i<8;i++)
-//    {
-//        block[i] = block[i] ^ key[i];
-//    }
+    for(int i=0;i<8;i++)
+    {
+        out[i] = in[i] ^ key[i];
+    }
 }
 
 JCryptStrategy_controller::JCryptStrategy_controller(QString key, bool b_decrypt, int lv)

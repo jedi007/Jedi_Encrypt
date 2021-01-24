@@ -13,8 +13,8 @@ public:
     virtual void handle(char in[8], char out[8]) = 0;
 
 protected:
-    void S8_en_block(QByteArray &block);
-    void S8_de_block(QByteArray &block);
+    void S8_en_block(char block[8]);
+    void S8_de_block(char block[8]);
 
     char key[16];
     char tmp[64];
