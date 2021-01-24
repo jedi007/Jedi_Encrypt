@@ -61,9 +61,10 @@ void EncryptModel::encypt_alg()
     qDebug()<<"outfilename: "<<outfilename;
 
     QByteArray head;
+    qint64 filesize = finfo.size();
     QDataStream stream( &head , QIODevice::WriteOnly);
     stream<<filename;
-    stream<<finfo.size();
+    stream<<filesize;
     head.resize(1024);
 
 
@@ -80,15 +81,17 @@ void EncryptModel::encypt_alg()
     int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
     JCryptStrategy_controller strategy(SystemConfig::getinstance()->key,false,lv);
 
+    qint64 outsize = 0;
     while (!infile.atEnd()) {
         QByteArray bytes = infile.read(8);
-        qDebug()<<"bytes"<<bytes.size()<<endl;
 
 
         strategy.handler(bytes);
 
         outfile.write(bytes);
 
+        outsize += 8;
+        state.percent = double(outsize)/filesize * 100 ;
     }
 
     outfile.close();
@@ -134,14 +137,24 @@ void EncryptModel::decypt_alg()
     int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
     JCryptStrategy_controller strategy(SystemConfig::getinstance()->key,true,lv);
 
+    qint64 outsize = 0;
     while (!infile.atEnd()) {
         QByteArray bytes = infile.read(8);
-        qDebug()<<"bytes"<<bytes.size()<<endl;
-
 
         strategy.handler(bytes);
 
-        outfile.write(bytes);
+        if(filesize - outsize >= 8)
+        {
+            outfile.write(bytes);
+            outsize += 8;
+        }
+        else
+        {
+            outfile.write(bytes,filesize-outsize);
+            outsize = filesize;
+        }
+
+        state.percent = double(outsize)/filesize * 100 ;
 
     }
 
