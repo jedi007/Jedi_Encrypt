@@ -23,6 +23,7 @@ SOURCES += \
     models/encryptlistmodel.cpp \
     models/encryptmodel.cpp \
     models/filetools.cpp \
+    models/jcryptstrategy.cpp \
     models/myfilesystemmodel.cpp \
     statusview.cpp \
     systemconfig.cpp
@@ -32,6 +33,7 @@ HEADERS += \
     models/encryptlistmodel.h \
     models/encryptmodel.h \
     models/filetools.h \
+    models/jcryptstrategy.h \
     models/myfilesystemmodel.h \
     statusview.h \
     systemconfig.h

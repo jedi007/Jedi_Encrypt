@@ -122,7 +122,20 @@ void MainWindow::on_pushButton_encrypt_clicked()
 
 void MainWindow::on_pushButton_decrypt_clicked()
 {
+    QThreadPool::globalInstance()->setMaxThreadCount(6);
+    int maxsize = QThreadPool::globalInstance()->maxThreadCount();
+    qDebug()<<"maxsize is "<<maxsize<<endl;
 
+    QList<EncryptState>& status = statusModel->status;
+    for(int i=0;i<status.size();i++)
+    {
+       qDebug()<<" status[i].filename:"<<status[i].filename<<endl;
+
+        EncryptModel* encrypt = new EncryptModel(status[i]);
+        encrypt->model = 1;
+
+        QThreadPool::globalInstance()->start(encrypt); // 提交任务给线程池，在线程池中执行
+    }
 }
 
 void MainWindow::on_treeView_clicked(const QModelIndex &index)

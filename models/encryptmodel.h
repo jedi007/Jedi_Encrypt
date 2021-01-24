@@ -14,7 +14,7 @@ public:
 
     virtual void run() override;
 
-    static int S[8][8];
+    int model = 0;
 private:
     EncryptState& state;
 
