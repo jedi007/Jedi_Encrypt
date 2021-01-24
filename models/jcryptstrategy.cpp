@@ -107,34 +107,31 @@ void JCryptStrategy_mid_de::handle(QByteArray &block)
     }
 }
 
-JCryptStrategy_controller::JCryptStrategy_controller(QString key, bool b_decrypt, JCryptStrategy_controller::LV lv)
+JCryptStrategy_controller::JCryptStrategy_controller(QString key, bool b_decrypt, int lv)
 {
     QString ba = QString("LiJie888%1").arg(key);
     key = QCryptographicHash::hash(ba.toUtf8(), QCryptographicHash::Md5).toHex();
     qDebug()<<" new key size: "<<key.size()<<"   "<<key<<endl;
 
     switch (lv) {
-        case LV::Low :
+        case 2 :
         {
+            if(b_decrypt)
+                strategey = new JCryptStrategy_mid_de(key);
+            else
+                strategey = new JCryptStrategy_mid(key);
+            break;
+        }
+        case 3 :
+        {
+            if(b_decrypt)
+                strategey = new JCryptStrategy_mid_de(key);
+            else
+                strategey = new JCryptStrategy_mid(key);
+            break;
+        }
+        default:
             strategey = new JCryptStrategy_low(key);
-            break;
-        }
-        case LV::Mid :
-        {
-            if(b_decrypt)
-                strategey = new JCryptStrategy_mid_de(key);
-            else
-                strategey = new JCryptStrategy_mid(key);
-            break;
-        }
-        case LV::Hig :
-        {
-            if(b_decrypt)
-                strategey = new JCryptStrategy_mid_de(key);
-            else
-                strategey = new JCryptStrategy_mid(key);
-            break;
-        }
     }
 }
 

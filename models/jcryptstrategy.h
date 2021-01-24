@@ -51,8 +51,7 @@ public:
 class JCryptStrategy_controller
 {
 public:
-    enum LV{Low,Mid,Hig};
-    JCryptStrategy_controller(QString key,bool b_decrypt=false,LV lv = LV::Low);
+    JCryptStrategy_controller(QString key,bool b_decrypt=false,int lv=1);
     ~JCryptStrategy_controller();
     void handler(QByteArray& block);
 

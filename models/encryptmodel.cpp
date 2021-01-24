@@ -55,7 +55,8 @@ void EncryptModel::encypt_alg()
         return;
     }
 
-    JCryptStrategy_controller strategy(SystemConfig::getinstance()->key,false,JCryptStrategy_controller::Mid);
+    int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
+    JCryptStrategy_controller strategy(SystemConfig::getinstance()->key,false,lv);
 
     while (!infile.atEnd()) {
         QByteArray bytes = infile.read(8);
@@ -96,7 +97,8 @@ void EncryptModel::decypt_alg()
         return;
     }
 
-    JCryptStrategy_controller strategy(SystemConfig::getinstance()->key,true,JCryptStrategy_controller::Mid);
+    int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
+    JCryptStrategy_controller strategy(SystemConfig::getinstance()->key,true,lv);
 
     while (!infile.atEnd()) {
         QByteArray bytes = infile.read(8);
