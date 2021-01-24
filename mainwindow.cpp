@@ -21,38 +21,20 @@ MainWindow::MainWindow(QWidget *parent)
 
     initMymolde();
 
-    resize(1366,768);
+    resize(1600,900);
 
     ui->splitter->setStretchFactor(0, 2);
     ui->splitter->setStretchFactor(1, 4);
     ui->splitter->setStretchFactor(2, 9);
+
+    ui->radioButton_Low->setChecked( SystemConfig::getinstance()->obj[DF_crypt_lv].toInt()==1 );
+    ui->radioButton_Mid->setChecked( SystemConfig::getinstance()->obj[DF_crypt_lv].toInt()==2 );
+    ui->radioButton_Hig->setChecked( SystemConfig::getinstance()->obj[DF_crypt_lv].toInt()==3 );
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-
-void MainWindow::on_pushButton_import_dir_clicked()
-{
-    QString srcDirPath = QFileDialog::getExistingDirectory(
-               this, "choose src Directory",
-                "/");
-
-    if (srcDirPath.isEmpty())
-    {
-        return;
-    }
-    else
-    {
-        qDebug() << "srcDirPath=" << srcDirPath;
-        srcDirPath += "/";
-    }
-
-    ui->treeView->setRootIndex( myModel->index(srcDirPath) );
-
-
 }
 
 void MainWindow::on_pushButton_encrypt_dir_clicked()
@@ -83,11 +65,6 @@ void MainWindow::on_pushButton_dencrypt_dir_clicked()
 
     initMymolde();
     ui->treeView->setCurrentIndex( myModel->index(newnamepath) );
-}
-
-void MainWindow::on_pushButton_import_file_clicked()
-{
-
 }
 
 void MainWindow::initMymolde()
@@ -152,4 +129,23 @@ void MainWindow::on_lineEdit_encrypt_key_textChanged(const QString &arg1)
     qDebug()<<" key change to "<< arg1 <<endl;
     SystemConfig::getinstance()->key = arg1;
 
+}
+
+
+void MainWindow::on_radioButton_Low_clicked()
+{
+    SystemConfig::getinstance()->obj.insert(DF_crypt_lv,1);
+    SystemConfig::getinstance()->save();
+}
+
+void MainWindow::on_radioButton_Mid_clicked()
+{
+    SystemConfig::getinstance()->obj.insert(DF_crypt_lv,2);
+    SystemConfig::getinstance()->save();
+}
+
+void MainWindow::on_radioButton_Hig_clicked()
+{
+    SystemConfig::getinstance()->obj.insert(DF_crypt_lv,3);
+    SystemConfig::getinstance()->save();
 }

@@ -8,6 +8,7 @@ QMutex SystemConfig::mutex;
 SystemConfig::SystemConfig()
 {
     filename = "./config.dat";
+    read();
 }
 
 SystemConfig *SystemConfig::getinstance()

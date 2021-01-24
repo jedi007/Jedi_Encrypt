@@ -7,6 +7,8 @@
 
 #include <QMutex>
 
+#define DF_crypt_lv "crypt_lv"
+
 class SystemConfig
 {
 public:
