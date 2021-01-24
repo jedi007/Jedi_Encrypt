@@ -25,6 +25,7 @@ void StatusView::resizeEvent(QResizeEvent *event)
 
 void StatusView::timerEvent(QTimerEvent *event)
 {
+    QTableView::timerEvent(event);
     EncryptListModel* listmodel = dynamic_cast<EncryptListModel*>(model());
     if(listmodel)
         listmodel->refresh();

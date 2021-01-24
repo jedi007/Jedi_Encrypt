@@ -20,11 +20,7 @@ void EncryptModel::run()
 {
     qDebug()<<"state.id is "<< state.id.data1 <<" thread ID is  "<<QThread::currentThreadId()<<endl;
     state.state_str = "计算中...";
-    for(int i=0;i<=3;i++)
-    {
-        QThread::msleep(100);
-        state.percent = i;
-    }
+
     if(model == 0)
         encypt_alg();
     else
@@ -61,10 +57,10 @@ void EncryptModel::encypt_alg()
     qDebug()<<"outfilename: "<<outfilename;
 
     QByteArray head;
-    qint64 filesize = finfo.size();
+    state.filesize = finfo.size();
     QDataStream stream( &head , QIODevice::WriteOnly);
     stream<<filename;
-    stream<<filesize;
+    stream<<state.filesize;
     head.resize(1024);
 
 
@@ -76,22 +72,24 @@ void EncryptModel::encypt_alg()
         return;
     }
 
+    QDataStream instream(&infile);
+    QDataStream outstream(&outfile);
+
     outfile.write(head);
+    //outstream<<head;
 
     int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
     JCryptStrategy_controller strategy(SystemConfig::getinstance()->key,false,lv);
 
-    qint64 outsize = 0;
+    QByteArray bytes;
     while (!infile.atEnd()) {
-        QByteArray bytes = infile.read(8);
-
+        bytes = infile.read(8);
 
         strategy.handler(bytes);
 
         outfile.write(bytes);
 
-        outsize += 8;
-        state.percent = double(outsize)/filesize * 100 ;
+        state.oversize += 8;
     }
 
     outfile.close();
@@ -115,15 +113,15 @@ void EncryptModel::decypt_alg()
     }
 
     QString outfilename;
-    qint64 filesize = 0;
+    state.filesize = 0;
 
     QByteArray head = infile.read(1024);
     QDataStream stream( &head , QIODevice::ReadOnly);
     stream>>outfilename;
-    stream>>filesize;
+    stream>>state.filesize;
 
     qDebug()<<"outfilename: "<<outfilename<<endl;
-    qDebug()<<"filesize: "<<filesize;
+    qDebug()<<"filesize: "<<state.filesize;
 
     QFileInfo finfo(state.filename);
     QFile outfile( QString("%1/decrypt_%2").arg(finfo.path()).arg(outfilename) );
@@ -137,25 +135,21 @@ void EncryptModel::decypt_alg()
     int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
     JCryptStrategy_controller strategy(SystemConfig::getinstance()->key,true,lv);
 
-    qint64 outsize = 0;
     while (!infile.atEnd()) {
         QByteArray bytes = infile.read(8);
 
         strategy.handler(bytes);
 
-        if(filesize - outsize >= 8)
+        if(state.filesize - state.oversize >7)
         {
             outfile.write(bytes);
-            outsize += 8;
+            state.oversize += 8;
         }
         else
         {
-            outfile.write(bytes,filesize-outsize);
-            outsize = filesize;
+            outfile.write(bytes,state.filesize-state.oversize);
+            state.oversize = state.filesize;
         }
-
-        state.percent = double(outsize)/filesize * 100 ;
-
     }
 
     outfile.close();

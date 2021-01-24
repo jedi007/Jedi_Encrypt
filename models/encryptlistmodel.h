@@ -8,7 +8,8 @@ class EncryptState
 {
 public:
     QString filename;
-    double percent = 0;
+    qint64 filesize = 1;
+    qint64 oversize = 0;
     QUuid id;
     bool over = false;
     QString state_str;
