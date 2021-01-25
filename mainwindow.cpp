@@ -32,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->radioButton_Mid->setChecked( SystemConfig::getinstance()->obj[DF_crypt_lv].toInt()==2 );
     ui->radioButton_Hig->setChecked( SystemConfig::getinstance()->obj[DF_crypt_lv].toInt()==3 );
 
+    ui->checkBox_no_outdir->setChecked( SystemConfig::getinstance()->obj[DF_no_outdir].toBool() );
+
     connect(ui->tableView,&StatusView::changeEnabled,[=](bool b){
         if(b && !this->buttons_enable)
         {
@@ -172,4 +174,13 @@ void MainWindow::on_radioButton_Hig_clicked()
 {
     SystemConfig::getinstance()->obj.insert(DF_crypt_lv,3);
     SystemConfig::getinstance()->save();
+}
+
+void MainWindow::on_checkBox_no_outdir_stateChanged(int arg1)
+{
+    SystemConfig::getinstance()->obj.insert(DF_no_outdir,ui->checkBox_no_outdir->isChecked());
+    if( !SystemConfig::getinstance()->save() )
+    {
+        ui->checkBox_no_outdir->setChecked( SystemConfig::getinstance()->obj[DF_no_outdir].toBool() );
+    }
 }

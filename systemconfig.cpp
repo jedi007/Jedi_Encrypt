@@ -8,6 +8,10 @@ QMutex SystemConfig::mutex;
 SystemConfig::SystemConfig()
 {
     filename = "./config.dat";
+
+    obj.insert(DF_crypt_lv,1);
+    obj.insert(DF_no_outdir,true);
+
     read();
 }
 
@@ -24,16 +28,18 @@ SystemConfig *SystemConfig::getinstance()
     return p;
 }
 
-void SystemConfig::save()
+bool SystemConfig::save()
 {
     QFile file(filename);
     if( !file.open(QFile::WriteOnly) )
-        return;
+        return false;
 
     QJsonDocument doc(obj);
     QByteArray bytes = doc.toJson();
     file.write( bytes );
     file.close();
+
+    return true;
 }
 
 void SystemConfig::read()

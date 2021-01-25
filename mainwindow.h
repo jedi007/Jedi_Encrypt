@@ -41,6 +41,8 @@ private slots:
 
     void on_radioButton_Hig_clicked();
 
+    void on_checkBox_no_outdir_stateChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
 

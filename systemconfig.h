@@ -8,12 +8,14 @@
 #include <QMutex>
 
 #define DF_crypt_lv "crypt_lv"
+#define DF_no_outdir "no_outdir"
+#define DF_outdir_str "outdir_str"
 
 class SystemConfig
 {
 public:
     static SystemConfig* getinstance();
-    void save();
+    bool save();
     void read();
 
     QJsonObject obj;
