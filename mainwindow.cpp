@@ -32,7 +32,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui->radioButton_Mid->setChecked( SystemConfig::getinstance()->obj[DF_crypt_lv].toInt()==2 );
     ui->radioButton_Hig->setChecked( SystemConfig::getinstance()->obj[DF_crypt_lv].toInt()==3 );
 
-    ui->checkBox_no_outdir->setChecked( SystemConfig::getinstance()->obj[DF_no_outdir].toBool() );
+    if( SystemConfig::getinstance()->obj[DF_no_outdir].toBool() )
+    {
+        ui->checkBox_no_outdir->setChecked( true );
+        ui->lineEdit_outdir->setEnabled(false);
+        ui->pushButton_setoutdir->setEnabled(false);
+    }
+    else
+    {
+        ui->checkBox_no_outdir->setChecked( false );
+        ui->lineEdit_outdir->setText(SystemConfig::getinstance()->obj[DF_outdir_str].toString());
+    }
 
     connect(ui->tableView,&StatusView::changeEnabled,[=](bool b){
         if(b && !this->buttons_enable)
@@ -178,9 +188,31 @@ void MainWindow::on_radioButton_Hig_clicked()
 
 void MainWindow::on_checkBox_no_outdir_stateChanged(int arg1)
 {
-    SystemConfig::getinstance()->obj.insert(DF_no_outdir,ui->checkBox_no_outdir->isChecked());
+    Q_UNUSED(arg1)
+
+    bool checked = ui->checkBox_no_outdir->isChecked();
+    SystemConfig::getinstance()->obj.insert(DF_no_outdir,checked);
     if( !SystemConfig::getinstance()->save() )
     {
         ui->checkBox_no_outdir->setChecked( SystemConfig::getinstance()->obj[DF_no_outdir].toBool() );
+        return;
     }
+
+    ui->lineEdit_outdir->setEnabled(!checked);
+    ui->pushButton_setoutdir->setEnabled(!checked);
+}
+
+void MainWindow::on_pushButton_setoutdir_clicked()
+{
+    QString outdir = QFileDialog::getExistingDirectory(this,"Save File",
+                                                       SystemConfig::getinstance()->obj[DF_outdir_str].toString());
+
+    qDebug()<<"outdir "<<outdir<<endl;
+    if(outdir == "")
+        return;
+
+    SystemConfig::getinstance()->obj.insert(DF_outdir_str,outdir);
+    if( !SystemConfig::getinstance()->save() )return;
+
+    ui->lineEdit_outdir->setText(outdir);
 }

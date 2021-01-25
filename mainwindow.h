@@ -43,6 +43,8 @@ private slots:
 
     void on_checkBox_no_outdir_stateChanged(int arg1);
 
+    void on_pushButton_setoutdir_clicked();
+
 private:
     Ui::MainWindow *ui;
 
