@@ -112,6 +112,8 @@ void EncryptModel::encypt_alg()
 
 void EncryptModel::decypt_alg()
 {
+    qDebug()<<"decypt_alg called"<<endl;
+
     FILE *infile,*outfile;
     QTextCodec *code = QTextCodec::codecForName("System");
 
@@ -172,8 +174,6 @@ void EncryptModel::decypt_alg()
 
     fclose(infile);
     fclose(outfile);
-    delete  infile;
-    delete  outfile;
 
     state.over = true;
     state.state_str = "完成";

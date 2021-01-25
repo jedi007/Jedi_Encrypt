@@ -82,8 +82,6 @@ void MainWindow::initMymolde()
 void MainWindow::on_pushButton_encrypt_clicked()
 {
     pool.setMaxThreadCount(6);
-    int maxsize = QThreadPool::globalInstance()->maxThreadCount();
-    qDebug()<<"maxsize is "<<maxsize<<endl;
 
     QList<EncryptState>& status = statusModel->status;
     for(int i=0;i<status.size();i++)
@@ -100,8 +98,6 @@ void MainWindow::on_pushButton_encrypt_clicked()
 void MainWindow::on_pushButton_decrypt_clicked()
 {
     pool.setMaxThreadCount(6);
-    int maxsize = QThreadPool::globalInstance()->maxThreadCount();
-    qDebug()<<"maxsize is "<<maxsize<<endl;
 
     QList<EncryptState>& status = statusModel->status;
     for(int i=0;i<status.size();i++)
