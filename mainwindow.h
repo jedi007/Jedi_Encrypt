@@ -45,6 +45,8 @@ private slots:
 
     void on_pushButton_setoutdir_clicked();
 
+    void on_spinBox_threads_count_valueChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
 

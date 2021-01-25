@@ -43,6 +43,9 @@ MainWindow::MainWindow(QWidget *parent)
         ui->checkBox_no_outdir->setChecked( false );
         ui->lineEdit_outdir->setText(SystemConfig::getinstance()->obj[DF_outdir_str].toString());
     }
+    ui->spinBox_threads_count->setValue( SystemConfig::getinstance()->obj[DF_threads_count].toInt() );
+
+    pool.setMaxThreadCount( SystemConfig::getinstance()->obj[DF_threads_count].toInt() );
 
     connect(ui->tableView,&StatusView::changeEnabled,[=](bool b){
         if(b && !this->buttons_enable)
@@ -116,8 +119,6 @@ void MainWindow::on_pushButton_encrypt_clicked()
     enableButtons(false);
     QApplication::processEvents();
 
-    pool.setMaxThreadCount(6);
-
     QList<EncryptState>& status = statusModel->status;
     for(int i=0;i<status.size();i++)
     {
@@ -135,8 +136,6 @@ void MainWindow::on_pushButton_decrypt_clicked()
 {
     enableButtons(false);
     QApplication::processEvents();
-
-    pool.setMaxThreadCount(6);
 
     QList<EncryptState>& status = statusModel->status;
     for(int i=0;i<status.size();i++)
@@ -192,13 +191,10 @@ void MainWindow::on_checkBox_no_outdir_stateChanged(int arg1)
 
     bool checked = ui->checkBox_no_outdir->isChecked();
     SystemConfig::getinstance()->obj.insert(DF_no_outdir,checked);
-    if( !SystemConfig::getinstance()->save() )
-    {
-        ui->checkBox_no_outdir->setChecked( SystemConfig::getinstance()->obj[DF_no_outdir].toBool() );
-        return;
-    }
+    SystemConfig::getinstance()->save();
 
     ui->lineEdit_outdir->setEnabled(!checked);
+    ui->lineEdit_outdir->setText( SystemConfig::getinstance()->obj[DF_outdir_str].toString() );
     ui->pushButton_setoutdir->setEnabled(!checked);
 }
 
@@ -212,7 +208,16 @@ void MainWindow::on_pushButton_setoutdir_clicked()
         return;
 
     SystemConfig::getinstance()->obj.insert(DF_outdir_str,outdir);
-    if( !SystemConfig::getinstance()->save() )return;
+    SystemConfig::getinstance()->save();
 
     ui->lineEdit_outdir->setText(outdir);
+}
+
+void MainWindow::on_spinBox_threads_count_valueChanged(int arg1)
+{
+    qDebug()<<" value change to: "<<arg1<<endl;
+    SystemConfig::getinstance()->obj.insert(DF_threads_count,arg1);
+    SystemConfig::getinstance()->save();
+
+    pool.setMaxThreadCount(arg1);
 }

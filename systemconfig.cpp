@@ -1,6 +1,7 @@
 #include "systemconfig.h"
 
 #include <QFile>
+#include <QMessageBox>
 
 SystemConfig* SystemConfig::p = nullptr;
 QMutex SystemConfig::mutex;
@@ -11,6 +12,8 @@ SystemConfig::SystemConfig()
 
     obj.insert(DF_crypt_lv,1);
     obj.insert(DF_no_outdir,true);
+    obj.insert(DF_outdir_str,"");
+    obj.insert(DF_threads_count,2);
 
     read();
 }
@@ -28,18 +31,19 @@ SystemConfig *SystemConfig::getinstance()
     return p;
 }
 
-bool SystemConfig::save()
+void SystemConfig::save()
 {
     QFile file(filename);
     if( !file.open(QFile::WriteOnly) )
-        return false;
+    {
+        //QMessageBox::information(nullptr,"设置失败","配置文件保存失败" );
+        return;
+    }
 
     QJsonDocument doc(obj);
     QByteArray bytes = doc.toJson();
     file.write( bytes );
     file.close();
-
-    return true;
 }
 
 void SystemConfig::read()
