@@ -23,6 +23,9 @@ private:
     void decypt_alg();
 
     void init_infile();
+
+    void encypt_init_outfile();
+    void decypt_init_outfile();
 };
 
 #endif // ENCRYPTMODEL_H
