@@ -17,9 +17,12 @@ public:
     int model = 0;
 private:
     EncryptState& state;
+    FILE *infile = nullptr,*outfile = nullptr;
 
     void encypt_alg();
     void decypt_alg();
+
+    void init_infile();
 };
 
 #endif // ENCRYPTMODEL_H
