@@ -51,8 +51,24 @@ void EncryptModel::run()
     catch (int err)
     {
         qDebug()<<"err is "<<err<<endl;
-        QString errstrs[9] = {"null",};
+        QString errstrs[7] = {"null",
+                              "输入文件打开失败","输出路径有误","输出文件打开失败",
+                              "输入文件信息有误","解密配置信息不正确","输出文件打开失败",
+                              };
+        int index = err*-1;
+        if(index < 0) index = 0;
+        if(index > 6) index = 6;
+
+        state.state_str = errstrs[index];
+
+        if( index >= 2)
+            fclose(infile);
+
+        if( index >= 5)
+            state.filesize = 1;
     }
+
+    state.over = true;
 
     qDebug()<<state.filename<<"   t.elapsed(): "<<t.elapsed()<<endl;
 }
@@ -120,11 +136,7 @@ void EncryptModel::init_infile()
     QTextCodec *code = QTextCodec::codecForName("System");
     std::string infilename = code->fromUnicode(state.filename).data();
     if((infile = fopen(infilename.c_str(),"rb")) == NULL)
-    {
-        state.over = true;
-        state.state_str = "输入文件打开失败";
         throw -1;
-    }
 }
 
 void EncryptModel::init_outpath()
@@ -145,11 +157,7 @@ void EncryptModel::init_outpath()
     }
 
     if( !path_info.isDir() )
-    {
-        state.over = true;
-        state.state_str = "输出路径有误";
-        throw -5;
-    }
+        throw -2;
 }
 
 void EncryptModel::encypt_init_outfile()
@@ -166,12 +174,7 @@ void EncryptModel::encypt_init_outfile()
 
     std::string outfilename = code->fromUnicode(qoutfilename).data();
     if((outfile = fopen(outfilename.c_str(),"wb")) == NULL)
-    {
-        fclose(infile);
-        state.over = true;
-        state.state_str = "输出文件打开失败";
-        throw -2;
-    }
+        throw -3;
 
     QByteArray head;
     head.resize(1024);
@@ -195,12 +198,7 @@ void EncryptModel::decypt_init_outfile()
     char chead[1024];
     int count = fread(chead,sizeof(char),1024,infile);
     if( count != 1024 )
-    {
-        fclose(infile);
-        state.over = true;
-        state.state_str = "输入文件信息有误";
-        throw -3;
-    }
+        throw -4;
 
     QByteArray head;
     QString qoutfilename,checkinfo;
@@ -214,23 +212,12 @@ void EncryptModel::decypt_init_outfile()
                                          .arg(SystemConfig::getinstance()->obj[DF_crypt_lv].toInt());
     QString r_checkinfo = QCryptographicHash::hash(ba.toUtf8(), QCryptographicHash::Md5).toHex();
     if( checkinfo != r_checkinfo )
-    {
-        fclose(infile);
-        state.over = true;
-        state.filesize = 1;
-        state.state_str = "解密配置信息不正确";
-        throw -4;
-    }
+        throw -5;
 
     QFileInfo finfo(state.filename);
     qoutfilename = QString("%1/decrypt_%2").arg(outpath).arg(qoutfilename);
     std::string outfilename = code->fromUnicode(qoutfilename).data();
 
     if((outfile = fopen(outfilename.c_str(),"wb")) == NULL)
-    {
-        fclose(infile);
-        state.over = true;
-        state.state_str = "输出文件打开失败";
-        throw -5;
-    }
+        throw -6;
 }
