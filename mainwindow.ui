@@ -34,7 +34,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <property name="tabSpacing">
         <number>6</number>
@@ -55,7 +55,7 @@
          <item>
           <widget class="QGroupBox" name="groupBox_2">
            <property name="title">
-            <string>秘钥</string>
+            <string>密码</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
             <item>

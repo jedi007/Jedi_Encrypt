@@ -116,6 +116,12 @@ void MainWindow::initMymolde()
 
 void MainWindow::on_pushButton_encrypt_clicked()
 {
+    if( SystemConfig::getinstance()->key.isEmpty() )
+    {
+        QMessageBox::information(this,"未设置密码","密码还未设置");
+        return;
+    }
+
     enableButtons(false);
     QApplication::processEvents();
 
@@ -134,6 +140,12 @@ void MainWindow::on_pushButton_encrypt_clicked()
 
 void MainWindow::on_pushButton_decrypt_clicked()
 {
+    if( SystemConfig::getinstance()->key.isEmpty() )
+    {
+        QMessageBox::information(this,"未设置密码","密码还未设置");
+        return;
+    }
+
     enableButtons(false);
     QApplication::processEvents();
 
