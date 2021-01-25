@@ -217,9 +217,6 @@ void MainWindow::on_pushButton_setoutdir_clicked()
     if(outdir == "")
         return;
 
-    SystemConfig::getinstance()->obj.insert(DF_outdir_str,outdir);
-    SystemConfig::getinstance()->save();
-
     ui->lineEdit_outdir->setText(outdir);
 }
 
@@ -230,4 +227,10 @@ void MainWindow::on_spinBox_threads_count_valueChanged(int arg1)
     SystemConfig::getinstance()->save();
 
     pool.setMaxThreadCount(arg1);
+}
+
+void MainWindow::on_lineEdit_outdir_textChanged(const QString &arg1)
+{
+    SystemConfig::getinstance()->obj.insert(DF_outdir_str,arg1);
+    SystemConfig::getinstance()->save();
 }

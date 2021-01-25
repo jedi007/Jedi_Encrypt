@@ -47,6 +47,8 @@ private slots:
 
     void on_spinBox_threads_count_valueChanged(int arg1);
 
+    void on_lineEdit_outdir_textChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
 
