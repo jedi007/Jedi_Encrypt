@@ -175,9 +175,7 @@ void MainWindow::on_lineEdit_encrypt_key_textChanged(const QString &arg1)
 {
     qDebug()<<" key change to "<< arg1 <<endl;
     SystemConfig::getinstance()->key = arg1;
-
 }
-
 
 void MainWindow::on_radioButton_Low_clicked()
 {

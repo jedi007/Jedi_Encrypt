@@ -1,15 +1,16 @@
 #include "encryptmodel.h"
 
 #include <QThread>
-#include <QDebug>
 #include <QDateTime>
 #include <QFile>
 #include <QFileInfo>
 #include <QCryptographicHash>
-#include <QDataStream>
 #include <QTextCodec>
 #include <iostream>
+#include <QDataStream>
+#include <QDir>
 
+#include <QDebug>
 #include "systemconfig.h"
 #include "jcryptstrategy.h"
 
@@ -28,6 +29,7 @@ void EncryptModel::run()
     try
     {
         init_infile();
+        init_outpath();
 
         if(model == 0)
         {
@@ -49,6 +51,7 @@ void EncryptModel::run()
     catch (int err)
     {
         qDebug()<<"err is "<<err<<endl;
+        QString errstrs[9] = {"null",};
     }
 
     qDebug()<<state.filename<<"   t.elapsed(): "<<t.elapsed()<<endl;
@@ -124,6 +127,31 @@ void EncryptModel::init_infile()
     }
 }
 
+void EncryptModel::init_outpath()
+{
+    if( SystemConfig::getinstance()->obj[DF_no_outdir].toBool())
+    {
+        QFileInfo finfo(state.filename);
+        outpath = finfo.path();
+    } else {
+        outpath = SystemConfig::getinstance()->obj[DF_outdir_str].toString();
+    }
+
+    QFileInfo path_info(outpath);
+    if( !path_info.isDir() )
+    {
+        QDir dir;
+        dir.mkpath(outpath);
+    }
+
+    if( !path_info.isDir() )
+    {
+        state.over = true;
+        state.state_str = "输出路径有误";
+        throw -5;
+    }
+}
+
 void EncryptModel::encypt_init_outfile()
 {
     QTextCodec *code = QTextCodec::codecForName("System");
@@ -134,7 +162,7 @@ void EncryptModel::encypt_init_outfile()
     if(!finfo.suffix().isEmpty() && namelist.size() > 1 )
         namelist.removeLast();
     namelist.append("jcpt");
-    QString qoutfilename =  QString("%1/%2").arg(finfo.path()).arg(namelist.join("."));
+    QString qoutfilename =  QString("%1/%2").arg(outpath).arg(namelist.join("."));
 
     std::string outfilename = code->fromUnicode(qoutfilename).data();
     if((outfile = fopen(outfilename.c_str(),"wb")) == NULL)
@@ -195,7 +223,7 @@ void EncryptModel::decypt_init_outfile()
     }
 
     QFileInfo finfo(state.filename);
-    qoutfilename = QString("%1/decrypt_%2").arg(finfo.path()).arg(qoutfilename);
+    qoutfilename = QString("%1/decrypt_%2").arg(outpath).arg(qoutfilename);
     std::string outfilename = code->fromUnicode(qoutfilename).data();
 
     if((outfile = fopen(outfilename.c_str(),"wb")) == NULL)

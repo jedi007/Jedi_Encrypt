@@ -18,11 +18,14 @@ public:
 private:
     EncryptState& state;
     FILE *infile = nullptr,*outfile = nullptr;
+    QString outpath;
 
     void encypt_alg();
     void decypt_alg();
 
     void init_infile();
+
+    void init_outpath();
 
     void encypt_init_outfile();
     void decypt_init_outfile();
