@@ -5,6 +5,7 @@
 #include <QDebug>
 
 #include "encryptlistmodel.h"
+#include "mainwindow.h"
 
 StatusView::StatusView(QWidget *parent):QTableView(parent)
 {
@@ -25,7 +26,15 @@ void StatusView::resizeEvent(QResizeEvent *event)
 void StatusView::timerEvent(QTimerEvent *event)
 {
     QTableView::timerEvent(event);
+
     EncryptListModel* listmodel = dynamic_cast<EncryptListModel*>(model());
+    if(listmodel->status.size()<1) return;
+
     if(listmodel)
         listmodel->refresh();
+    foreach (const EncryptState& state, listmodel->status) {
+        if( !state.over )
+            return;
+    }
+    emit changeEnabled(true);
 }

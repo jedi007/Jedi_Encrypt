@@ -19,6 +19,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void enableButtons(bool b);
+    bool buttons_enable = true;
+
 private slots:
     void on_pushButton_encrypt_dir_clicked();
 

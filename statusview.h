@@ -13,6 +13,9 @@ public:
 
     int timerID;
     virtual void timerEvent(QTimerEvent *event) override;
+
+signals:
+    void changeEnabled(bool b);
 };
 
 #endif // STATUSVIEW_H

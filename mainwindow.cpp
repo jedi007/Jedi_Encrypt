@@ -7,6 +7,7 @@
 #include "filetools.h"
 #include "encryptmodel.h"
 #include <QDebug>
+#include <QMessageBox>
 
 #include "systemconfig.h"
 
@@ -30,11 +31,30 @@ MainWindow::MainWindow(QWidget *parent)
     ui->radioButton_Low->setChecked( SystemConfig::getinstance()->obj[DF_crypt_lv].toInt()==1 );
     ui->radioButton_Mid->setChecked( SystemConfig::getinstance()->obj[DF_crypt_lv].toInt()==2 );
     ui->radioButton_Hig->setChecked( SystemConfig::getinstance()->obj[DF_crypt_lv].toInt()==3 );
+
+    connect(ui->tableView,&StatusView::changeEnabled,[=](bool b){
+        if(b && !this->buttons_enable)
+        {
+            QMessageBox::information( this,"操作完成","所有任务均已完毕" );
+            this->enableButtons(b);
+        }
+    });
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::enableButtons(bool b)
+{
+    ui->pushButton_encrypt_dir->setEnabled(b);
+    ui->pushButton_dencrypt_dir->setEnabled(b);
+    ui->pushButton_decrypt->setEnabled(b);
+    ui->pushButton_encrypt->setEnabled(b);
+    ui->treeView->setEnabled(b);
+    ui->toolBox->setEnabled(b);
+    buttons_enable = b;
 }
 
 void MainWindow::on_pushButton_encrypt_dir_clicked()
@@ -81,6 +101,9 @@ void MainWindow::initMymolde()
 
 void MainWindow::on_pushButton_encrypt_clicked()
 {
+    enableButtons(false);
+    QApplication::processEvents();
+
     pool.setMaxThreadCount(6);
 
     QList<EncryptState>& status = statusModel->status;
@@ -97,6 +120,9 @@ void MainWindow::on_pushButton_encrypt_clicked()
 
 void MainWindow::on_pushButton_decrypt_clicked()
 {
+    enableButtons(false);
+    QApplication::processEvents();
+
     pool.setMaxThreadCount(6);
 
     QList<EncryptState>& status = statusModel->status;
