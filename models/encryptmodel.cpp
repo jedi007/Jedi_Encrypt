@@ -152,6 +152,11 @@ void EncryptModel::encypt_init_outfile()
     stream<<filename;
     stream<<state.filesize;
 
+    QString ba = QString("LiJie888%1_%2").arg(SystemConfig::getinstance()->key)
+                                         .arg(SystemConfig::getinstance()->obj[DF_crypt_lv].toInt());
+    QString checkinfo = QCryptographicHash::hash(ba.toUtf8(), QCryptographicHash::Md5).toHex();
+    stream<<checkinfo;
+
     fwrite(head.data(),sizeof(char),1024,outfile);
 }
 
@@ -159,7 +164,6 @@ void EncryptModel::decypt_init_outfile()
 {
     QTextCodec *code = QTextCodec::codecForName("System");
 
-    QString qoutfilename;
     char chead[1024];
     int count = fread(chead,sizeof(char),1024,infile);
     if( count != 1024 )
@@ -171,10 +175,24 @@ void EncryptModel::decypt_init_outfile()
     }
 
     QByteArray head;
+    QString qoutfilename,checkinfo;
     head.setRawData(chead,1024);
     QDataStream stream( &head , QIODevice::ReadOnly);
     stream>>qoutfilename;
     stream>>state.filesize;
+    stream>>checkinfo;
+
+    QString ba = QString("LiJie888%1_%2").arg(SystemConfig::getinstance()->key)
+                                         .arg(SystemConfig::getinstance()->obj[DF_crypt_lv].toInt());
+    QString r_checkinfo = QCryptographicHash::hash(ba.toUtf8(), QCryptographicHash::Md5).toHex();
+    if( checkinfo != r_checkinfo )
+    {
+        fclose(infile);
+        state.over = true;
+        state.filesize = 1;
+        state.state_str = "解密配置信息不正确";
+        throw -4;
+    }
 
     QFileInfo finfo(state.filename);
     qoutfilename = QString("%1/decrypt_%2").arg(finfo.path()).arg(qoutfilename);
@@ -185,6 +203,6 @@ void EncryptModel::decypt_init_outfile()
         fclose(infile);
         state.over = true;
         state.state_str = "输出文件打开失败";
-        throw -4;
+        throw -5;
     }
 }
