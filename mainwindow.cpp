@@ -120,43 +120,7 @@ void MainWindow::initMymolde()
 
 }
 
-void MainWindow::on_pushButton_encrypt_clicked()
-{
-    if( SystemConfig::getinstance()->key.isEmpty() )
-    {
-        QMessageBox::information(this,"未设置密码","密码还未设置");
-        return;
-    }
-
-    enableButtons(false);
-    QApplication::processEvents();   
-
-    QList<EncryptState>& status = statusModel->status;
-    for(int i=0;i<status.size();i++)
-    {
-        status[i].over = false;
-        status[i].oversize = 0;
-
-        QString outpath;
-        if( SystemConfig::getinstance()->obj[DF_no_outdir].toBool())
-        {
-            QFileInfo finfo(status[i].filename);
-            outpath = finfo.path();
-        } else {
-            outpath = SystemConfig::getinstance()->obj[DF_outdir_str].toString();
-        }
-        QString key = SystemConfig::getinstance()->key;
-        int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
-
-
-        EncryptModel* encrypt = new EncryptModel(status[i],key,outpath,lv,0);
-
-        pool.start(encrypt);
-    }
-
-}
-
-void MainWindow::on_pushButton_decrypt_clicked()
+void MainWindow::beginCryptThread(int mode)
 {
     if( SystemConfig::getinstance()->key.isEmpty() )
     {
@@ -184,10 +148,21 @@ void MainWindow::on_pushButton_decrypt_clicked()
         QString key = SystemConfig::getinstance()->key;
         int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
 
-        EncryptModel* encrypt = new EncryptModel(status[i],key,outpath,lv,1);
+
+        EncryptModel* encrypt = new EncryptModel(status[i],key,outpath,lv,mode);
 
         pool.start(encrypt);
     }
+}
+
+void MainWindow::on_pushButton_encrypt_clicked()
+{
+    beginCryptThread(0);
+}
+
+void MainWindow::on_pushButton_decrypt_clicked()
+{
+    beginCryptThread(1);
 }
 
 void MainWindow::on_treeView_clicked(const QModelIndex &index)

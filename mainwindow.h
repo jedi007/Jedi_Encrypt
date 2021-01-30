@@ -58,6 +58,7 @@ private:
     EncryptListModel* statusModel = nullptr;
 
     void initMymolde();
+    void beginCryptThread(int mode);
 
     QThreadPool pool;
 };
