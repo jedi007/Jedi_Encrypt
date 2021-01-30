@@ -16,9 +16,10 @@ protected:
     void S8_en_block(char block[8]);
     void S8_de_block(char block[8]);
 
-    char key[16];
+    char key[32];
     char tmp[64];
     static int S[8][8];
+    int keyindex = 0;
 };
 
 class JCryptStrategy_low:public JCryptStrategy
@@ -44,6 +45,24 @@ class JCryptStrategy_mid_de:public JCryptStrategy
 public:
     JCryptStrategy_mid_de(QString t_key);
     virtual ~JCryptStrategy_mid_de(){}
+
+    virtual void handle(char in[8], char out[8]);
+};
+
+class JCryptStrategy_hig:public JCryptStrategy
+{
+public:
+    JCryptStrategy_hig(QString t_key);
+    virtual ~JCryptStrategy_hig(){}
+
+    virtual void handle(char in[8], char out[8]);
+};
+
+class JCryptStrategy_hig_de:public JCryptStrategy
+{
+public:
+    JCryptStrategy_hig_de(QString t_key);
+    virtual ~JCryptStrategy_hig_de(){}
 
     virtual void handle(char in[8], char out[8]);
 };

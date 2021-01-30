@@ -14,7 +14,10 @@ int JCryptStrategy::S[8][8] =  {{15,2,13,7,5,8,12,33},
 
 JCryptStrategy::JCryptStrategy(QString t_key)
 {
-    memcpy(key,t_key.toUtf8().data(),16);
+
+    memcpy(key,t_key.toUtf8().data(),32);
+
+    qDebug()<<" key is "<<key<<endl;
 }
 
 void JCryptStrategy::S8_en_block(char block[8])
@@ -81,12 +84,11 @@ JCryptStrategy_mid::JCryptStrategy_mid(QString t_key):JCryptStrategy(t_key)
 
 void JCryptStrategy_mid::handle(char in[8], char out[8])
 {
+    keyindex = (keyindex+1)%24;
     for(int i=0;i<8;i++)
     {
-        out[i] = in[i] ^ key[i];
+        out[i] = in[i] ^ key[i+keyindex];
     }
-
-    S8_en_block(out);
 }
 
 JCryptStrategy_mid_de::JCryptStrategy_mid_de(QString t_key):JCryptStrategy(t_key)
@@ -96,11 +98,10 @@ JCryptStrategy_mid_de::JCryptStrategy_mid_de(QString t_key):JCryptStrategy(t_key
 
 void JCryptStrategy_mid_de::handle(char in[8], char out[8])
 {
-    S8_de_block(in);
-
+    keyindex = (keyindex+1)%24;
     for(int i=0;i<8;i++)
     {
-        out[i] = in[i] ^ key[i];
+        out[i] = in[i] ^ key[i+keyindex];
     }
 }
 
@@ -122,9 +123,9 @@ JCryptStrategy_controller::JCryptStrategy_controller(QString key, bool b_decrypt
         case 3 :
         {
             if(b_decrypt)
-                strategey = new JCryptStrategy_mid_de(key);
+                strategey = new JCryptStrategy_hig_de(key);
             else
-                strategey = new JCryptStrategy_mid(key);
+                strategey = new JCryptStrategy_hig(key);
             break;
         }
         default:
@@ -141,4 +142,36 @@ JCryptStrategy_controller::~JCryptStrategy_controller()
 void JCryptStrategy_controller::handler(char in[8], char out[8])
 {
     strategey->handle(in,out);
+}
+
+JCryptStrategy_hig::JCryptStrategy_hig(QString t_key):JCryptStrategy(t_key)
+{
+
+}
+
+void JCryptStrategy_hig::handle(char in[], char out[])
+{
+    keyindex = (keyindex+1)%24;
+    for(int i=0;i<8;i++)
+    {
+        out[i] = in[i] ^ key[i+keyindex];
+    }
+
+    S8_en_block(out);
+}
+
+JCryptStrategy_hig_de::JCryptStrategy_hig_de(QString t_key):JCryptStrategy(t_key)
+{
+
+}
+
+void JCryptStrategy_hig_de::handle(char in[], char out[])
+{
+    S8_de_block(in);
+
+    keyindex = (keyindex+1)%24;
+    for(int i=0;i<8;i++)
+    {
+        out[i] = in[i] ^ key[i+keyindex];
+    }
 }
