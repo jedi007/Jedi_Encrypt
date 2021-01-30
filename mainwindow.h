@@ -22,6 +22,8 @@ public:
     void enableButtons(bool b);
     bool buttons_enable = true;
 
+    virtual void closeEvent(QCloseEvent *event);
+
 private slots:
     void on_pushButton_encrypt_dir_clicked();
 

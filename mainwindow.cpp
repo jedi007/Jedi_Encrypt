@@ -72,6 +72,12 @@ void MainWindow::enableButtons(bool b)
     buttons_enable = b;
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    Q_UNUSED(event)
+    exit(0);
+}
+
 void MainWindow::on_pushButton_encrypt_dir_clicked()
 {
     QString current_path = myModel->filePath(ui->treeView->currentIndex());
