@@ -11,27 +11,26 @@
 #include <QDir>
 
 #include <QDebug>
-#include "systemconfig.h"
 #include "jcryptstrategy.h"
 
-EncryptModel::EncryptModel(EncryptState& t_state):state(t_state)
+EncryptModel::EncryptModel(EncryptState& t_state, QString t_key,QString t_outpath,int t_crypt_lv,int t_crypt_model)
+    :state(t_state),key(t_key),outpath(t_outpath),crypt_lv(t_crypt_lv),crypt_model(t_crypt_model)
 {
 
 }
 
 void EncryptModel::run()
 {
-    qDebug()<<"state.id is "<< state.id.data1 <<" thread ID is  "<<QThread::currentThreadId()<<endl;
     state.state_str = "计算中...";
 
     QTime t = QTime::currentTime();
-
     try
+
     {
         init_infile();
         init_outpath();
 
-        if(model == 0)
+        if(crypt_model == 0)
         {
             encypt_init_outfile();
             encypt_alg();
@@ -75,8 +74,7 @@ void EncryptModel::run()
 
 void EncryptModel::encypt_alg()
 {
-    int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
-    JCryptStrategy_controller strategy(SystemConfig::getinstance()->key,false,lv);
+    JCryptStrategy_controller strategy(key,false,crypt_lv);
 
     int count = 0;
     char inBlock[8],outBlock[8];
@@ -104,8 +102,7 @@ void EncryptModel::encypt_alg()
 
 void EncryptModel::decypt_alg()
 {
-    int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
-    JCryptStrategy_controller strategy(SystemConfig::getinstance()->key,true,lv);
+    JCryptStrategy_controller strategy(key,true,crypt_lv);
 
     int count;
     char inBlock[8],outBlock[8];
@@ -140,14 +137,13 @@ void EncryptModel::init_infile()
 }
 
 void EncryptModel::init_outpath()
-{
-    if( SystemConfig::getinstance()->obj[DF_no_outdir].toBool())
+{  
+    if(outpath.isEmpty())
     {
         QFileInfo finfo(state.filename);
         outpath = finfo.path();
-    } else {
-        outpath = SystemConfig::getinstance()->obj[DF_outdir_str].toString();
     }
+
 
     QFileInfo path_info(outpath);
     if( !path_info.isDir() )
@@ -183,8 +179,7 @@ void EncryptModel::encypt_init_outfile()
     stream<<filename;
     stream<<state.filesize;
 
-    QString ba = QString("LiJie888%1_%2").arg(SystemConfig::getinstance()->key)
-                                         .arg(SystemConfig::getinstance()->obj[DF_crypt_lv].toInt());
+    QString ba = QString("LiJie888%1_%2").arg(key).arg(crypt_lv);
     QString checkinfo = QCryptographicHash::hash(ba.toUtf8(), QCryptographicHash::Md5).toHex();
     stream<<checkinfo;
 
@@ -208,8 +203,7 @@ void EncryptModel::decypt_init_outfile()
     stream>>state.filesize;
     stream>>checkinfo;
 
-    QString ba = QString("LiJie888%1_%2").arg(SystemConfig::getinstance()->key)
-                                         .arg(SystemConfig::getinstance()->obj[DF_crypt_lv].toInt());
+    QString ba = QString("LiJie888%1_%2").arg(key).arg(crypt_lv);
     QString r_checkinfo = QCryptographicHash::hash(ba.toUtf8(), QCryptographicHash::Md5).toHex();
     if( checkinfo != r_checkinfo )
         throw -5;

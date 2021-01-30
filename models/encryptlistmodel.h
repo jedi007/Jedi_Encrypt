@@ -2,18 +2,7 @@
 #define ENCRYPTLISTMODEL_H
 
 #include <QAbstractTableModel>
-#include <QUuid>
-
-class EncryptState
-{
-public:
-    QString filename;
-    qint64 filesize = 1;
-    qint64 oversize = 0;
-    QUuid id;
-    bool over = false;
-    QString state_str;
-};
+#include "encryptmodel.h"
 
 class EncryptListModel : public QAbstractTableModel
 {

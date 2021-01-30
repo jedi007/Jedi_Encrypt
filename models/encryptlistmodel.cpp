@@ -92,7 +92,7 @@ void EncryptListModel::readPath(QString path)
     {
         EncryptState state;
         state.filename = path;
-        state.id = QUuid::createUuid();//生成唯一码
+        //state.id = QUuid::createUuid();//生成唯一码
         status.append(state);
 
         return;

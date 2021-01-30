@@ -129,7 +129,7 @@ void MainWindow::on_pushButton_encrypt_clicked()
     }
 
     enableButtons(false);
-    QApplication::processEvents();
+    QApplication::processEvents();   
 
     QList<EncryptState>& status = statusModel->status;
     for(int i=0;i<status.size();i++)
@@ -137,7 +137,19 @@ void MainWindow::on_pushButton_encrypt_clicked()
         status[i].over = false;
         status[i].oversize = 0;
 
-        EncryptModel* encrypt = new EncryptModel(status[i]);
+        QString outpath;
+        if( SystemConfig::getinstance()->obj[DF_no_outdir].toBool())
+        {
+            QFileInfo finfo(status[i].filename);
+            outpath = finfo.path();
+        } else {
+            outpath = SystemConfig::getinstance()->obj[DF_outdir_str].toString();
+        }
+        QString key = SystemConfig::getinstance()->key;
+        int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
+
+
+        EncryptModel* encrypt = new EncryptModel(status[i],key,outpath,lv,0);
 
         pool.start(encrypt);
     }
@@ -161,8 +173,18 @@ void MainWindow::on_pushButton_decrypt_clicked()
         status[i].over = false;
         status[i].oversize = 0;
 
-        EncryptModel* encrypt = new EncryptModel(status[i]);
-        encrypt->model = 1;
+        QString outpath;
+        if( SystemConfig::getinstance()->obj[DF_no_outdir].toBool())
+        {
+            QFileInfo finfo(status[i].filename);
+            outpath = finfo.path();
+        } else {
+            outpath = SystemConfig::getinstance()->obj[DF_outdir_str].toString();
+        }
+        QString key = SystemConfig::getinstance()->key;
+        int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
+
+        EncryptModel* encrypt = new EncryptModel(status[i],key,outpath,lv,1);
 
         pool.start(encrypt);
     }

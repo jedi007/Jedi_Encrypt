@@ -4,21 +4,31 @@
 #include <QRunnable>
 #include <QObject>
 
-#include "encryptlistmodel.h"
+class EncryptState
+{
+public:
+    QString filename;
+    qint64 filesize = 1;
+    qint64 oversize = 0;
+    bool over = false;
+    QString state_str;
+};
 
 class EncryptModel : public QRunnable
 {
 
 public:
-    EncryptModel(EncryptState& t_state);
+    EncryptModel(EncryptState& t_state, QString t_key,QString t_outpath="",int t_crypt_lv = 1,int t_crypt_model = 0);
 
     virtual void run() override;
 
-    int model = 0;
 private:
     EncryptState& state;
     FILE *infile = nullptr,*outfile = nullptr;
+    QString key;
     QString outpath;
+    int crypt_lv;
+    int crypt_model;
 
     void encypt_alg();
     void decypt_alg();
