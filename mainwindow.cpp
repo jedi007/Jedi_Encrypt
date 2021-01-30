@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     statusModel = new EncryptListModel(this);
     ui->tableView->setModel(statusModel);
+    ui->toolBox->setCurrentIndex(0);
 
     initMymolde();
 

@@ -38,7 +38,7 @@ QVariant EncryptListModel::data(const QModelIndex &index, int role) const
             case 1:
             {
                 double percent = double(status.at(row).oversize)/status.at(row).filesize*100;
-                return QString("%1%").arg(percent);
+                return QString("%1%").arg( QString::number(percent,'f',2));
             }
             break;
             case 2:
