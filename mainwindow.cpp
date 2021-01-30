@@ -129,13 +129,13 @@ void MainWindow::beginCryptThread(int mode)
     }
 
     enableButtons(false);
-    QApplication::processEvents();
 
     QList<EncryptState>& status = statusModel->status;
     for(int i=0;i<status.size();i++)
     {
         status[i].over = false;
         status[i].oversize = 0;
+        QApplication::processEvents();
 
         QString outpath;
         if( SystemConfig::getinstance()->obj[DF_no_outdir].toBool())
