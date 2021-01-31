@@ -238,3 +238,17 @@ void MainWindow::on_lineEdit_outdir_textChanged(const QString &arg1)
     SystemConfig::getinstance()->obj.insert(DF_outdir_str,arg1);
     SystemConfig::getinstance()->save();
 }
+
+void MainWindow::on_pushButton_show_pasword_clicked()
+{
+    if( ui->lineEdit_encrypt_key->echoMode() == QLineEdit::Password )
+    {
+        ui->lineEdit_encrypt_key->setEchoMode(QLineEdit::Normal);
+        ui->pushButton_show_pasword->setIcon( QIcon(":/images/eye_514px_open.png") );
+    }
+    else
+    {
+        ui->lineEdit_encrypt_key->setEchoMode(QLineEdit::Password);
+        ui->pushButton_show_pasword->setIcon( QIcon(":/images/eye_closed_265px.png") );
+    }
+}

@@ -51,6 +51,8 @@ private slots:
 
     void on_lineEdit_outdir_textChanged(const QString &arg1);
 
+    void on_pushButton_show_pasword_clicked();
+
 private:
     Ui::MainWindow *ui;
 
