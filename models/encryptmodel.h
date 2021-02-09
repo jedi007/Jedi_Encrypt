@@ -1,4 +1,4 @@
-#ifndef ENCRYPTMODEL_H
+﻿#ifndef ENCRYPTMODEL_H
 #define ENCRYPTMODEL_H
 
 #include <QRunnable>
@@ -18,7 +18,7 @@ class EncryptModel : public QRunnable
 {
 
 public:
-    EncryptModel(EncryptState& t_state, QString t_key,QString t_outpath="",int t_crypt_lv = 1,int t_crypt_model = 0);
+    EncryptModel(EncryptState& t_state, QString t_key,QString t_outpath="",int t_crypt_lv = 1,int t_crypt_model = 0,bool t_delete_import_file = false);
 
     virtual void run() override;
 
@@ -29,6 +29,7 @@ private:
     QString outpath;
     int crypt_lv;
     int crypt_model;
+    bool delete_import_file = false;
 
     void encypt_alg();
     void decypt_alg();

@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 #include <QFileDialog>
@@ -149,8 +149,9 @@ void MainWindow::beginCryptThread(int mode)
         QString key = SystemConfig::getinstance()->key;
         int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
 
+        bool delete_import_file = SystemConfig::getinstance()->delete_importfile;
 
-        EncryptModel* encrypt = new EncryptModel(status[i],key,outpath,lv,mode);
+        EncryptModel* encrypt = new EncryptModel(status[i],key,outpath,lv,mode,delete_import_file);
 
         pool.start(encrypt);
     }
@@ -251,4 +252,9 @@ void MainWindow::on_pushButton_show_pasword_clicked()
         ui->lineEdit_encrypt_key->setEchoMode(QLineEdit::Password);
         ui->pushButton_show_pasword->setIcon( QIcon(":/images/eye_closed_265px.png") );
     }
+}
+
+void MainWindow::on_checkBox_delete_importfile_clicked(bool checked)
+{
+    SystemConfig::getinstance()->delete_importfile = checked;
 }

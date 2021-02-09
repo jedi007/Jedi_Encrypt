@@ -1,4 +1,4 @@
-#ifndef SYSTEMCONFIG_H
+﻿#ifndef SYSTEMCONFIG_H
 #define SYSTEMCONFIG_H
 
 
@@ -21,6 +21,7 @@ public:
 
     QJsonObject obj;
     QString key;
+    bool delete_importfile = false;
 
 private:
     SystemConfig();

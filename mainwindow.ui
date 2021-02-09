@@ -44,8 +44,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>299</width>
-          <height>479</height>
+          <width>284</width>
+          <height>465</height>
          </rect>
         </property>
         <attribute name="label">
@@ -175,8 +175,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>299</width>
-          <height>479</height>
+          <width>284</width>
+          <height>465</height>
          </rect>
         </property>
         <attribute name="label">
@@ -268,8 +268,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>299</width>
-          <height>479</height>
+          <width>284</width>
+          <height>465</height>
          </rect>
         </property>
         <attribute name="label">
@@ -510,6 +510,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="checkBox_delete_importfile">
+            <property name="text">
+             <string>完成后删除源文件</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -536,7 +543,7 @@
      <x>0</x>
      <y>0</y>
      <width>951</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>

@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -52,6 +52,8 @@ private slots:
     void on_lineEdit_outdir_textChanged(const QString &arg1);
 
     void on_pushButton_show_pasword_clicked();
+
+    void on_checkBox_delete_importfile_clicked(bool checked);
 
 private:
     Ui::MainWindow *ui;

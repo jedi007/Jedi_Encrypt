@@ -1,4 +1,4 @@
-#include "encryptmodel.h"
+﻿#include "encryptmodel.h"
 
 #include <QThread>
 #include <QDateTime>
@@ -13,8 +13,8 @@
 #include <QDebug>
 #include "jcryptstrategy.h"
 
-EncryptModel::EncryptModel(EncryptState& t_state, QString t_key,QString t_outpath,int t_crypt_lv,int t_crypt_model)
-    :state(t_state),key(t_key),outpath(t_outpath),crypt_lv(t_crypt_lv),crypt_model(t_crypt_model)
+EncryptModel::EncryptModel(EncryptState& t_state, QString t_key,QString t_outpath,int t_crypt_lv,int t_crypt_model,bool t_delete_import_file)
+    :state(t_state),key(t_key),outpath(t_outpath),crypt_lv(t_crypt_lv),crypt_model(t_crypt_model),delete_import_file(t_delete_import_file)
 {
 
 }
@@ -43,6 +43,15 @@ void EncryptModel::run()
 
         fclose(infile);
         fclose(outfile);
+
+        if(delete_import_file)
+        {
+            qDebug()<<"state.filename: "<<state.filename<<endl;
+            QFile deletefile(state.filename);
+            bool ok = deletefile.remove();
+            qDebug()<<"delete: "<<ok<<endl;
+        }
+
 
         state.over = true;
         state.state_str = "完成";
@@ -209,7 +218,7 @@ void EncryptModel::decypt_init_outfile()
         throw -5;
 
     QFileInfo finfo(state.filename);
-    qoutfilename = QString("%1/decrypt_%2").arg(outpath).arg(qoutfilename);
+    qoutfilename = QString("%1/%2").arg(outpath).arg(qoutfilename);
     std::string outfilename = code->fromUnicode(qoutfilename).data();
 
     if((outfile = fopen(outfilename.c_str(),"wb")) == NULL)
