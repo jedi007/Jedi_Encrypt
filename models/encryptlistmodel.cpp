@@ -76,8 +76,6 @@ QVariant EncryptListModel::headerData(int section, Qt::Orientation orientation, 
 
 void EncryptListModel::setPath(QString path)
 {
-    qDebug()<<"EncryptListModel::setPath called "<<path<<endl;
-
     status.clear();
 
     readPath(path);
@@ -99,12 +97,10 @@ void EncryptListModel::readPath(QString path)
     }
     else if (finfo.isDir())
     {
-        qDebug()<<path<<" is dir"<<endl;
         QDir dir(path);
 
         QStringList list  = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Files, QDir::Name);
 
-        qDebug()<<"list : "<<list<<endl;
         foreach (QString name, list)
         {
             readPath(path+"/"+name);

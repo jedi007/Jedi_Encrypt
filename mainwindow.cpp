@@ -173,12 +173,12 @@ void MainWindow::on_treeView_clicked(const QModelIndex &index)
 
     if(current_path.isEmpty()) return;
 
+    qDebug()<<"current_path: "<<current_path<<endl;
     statusModel->setPath(current_path);
 }
 
 void MainWindow::on_lineEdit_encrypt_key_textChanged(const QString &arg1)
 {
-    qDebug()<<" key change to "<< arg1 <<endl;
     SystemConfig::getinstance()->key = arg1;
 }
 
@@ -218,7 +218,6 @@ void MainWindow::on_pushButton_setoutdir_clicked()
     QString outdir = QFileDialog::getExistingDirectory(this,"Save File",
                                                        SystemConfig::getinstance()->obj[DF_outdir_str].toString());
 
-    qDebug()<<"outdir "<<outdir<<endl;
     if(outdir == "")
         return;
 
@@ -227,7 +226,6 @@ void MainWindow::on_pushButton_setoutdir_clicked()
 
 void MainWindow::on_spinBox_threads_count_valueChanged(int arg1)
 {
-    qDebug()<<" value change to: "<<arg1<<endl;
     SystemConfig::getinstance()->obj.insert(DF_threads_count,arg1);
     SystemConfig::getinstance()->save();
 
