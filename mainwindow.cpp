@@ -138,13 +138,16 @@ void MainWindow::beginCryptThread(int mode)
         status[i].oversize = 0;
         QApplication::processEvents();
 
+        QFileInfo finfo(status[i].filename);
         QString outpath;
         if( SystemConfig::getinstance()->obj[DF_no_outdir].toBool())
         {
-            QFileInfo finfo(status[i].filename);
             outpath = finfo.path();
         } else {
             outpath = SystemConfig::getinstance()->obj[DF_outdir_str].toString();
+            QString work_path = SystemConfig::getinstance()->work_path;
+
+            outpath = finfo.path().replace(work_path,outpath);
         }
         QString key = SystemConfig::getinstance()->key;
         int lv = SystemConfig::getinstance()->obj[DF_crypt_lv].toInt();
@@ -174,6 +177,17 @@ void MainWindow::on_treeView_clicked(const QModelIndex &index)
     if(current_path.isEmpty()) return;
 
     qDebug()<<"current_path: "<<current_path<<endl;
+
+    QFileInfo finfo(current_path);
+    if(finfo.isFile())
+    {
+        qDebug()<<"its file finfo.path():  "<<finfo.path()<<endl;
+        SystemConfig::getinstance()->work_path = finfo.path();
+    } else {
+        qDebug()<<"its dir finfo.path():  "<<finfo.path()<<endl;
+        SystemConfig::getinstance()->work_path = current_path;
+    }
+
     statusModel->setPath(current_path);
 }
 

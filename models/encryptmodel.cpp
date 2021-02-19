@@ -46,7 +46,6 @@ void EncryptModel::run()
 
         if(delete_import_file)
         {
-            qDebug()<<"state.filename: "<<state.filename<<endl;
             QFile deletefile(state.filename);
             bool ok = deletefile.remove();
             qDebug()<<"delete: "<<ok<<endl;

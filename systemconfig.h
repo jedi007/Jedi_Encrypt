@@ -21,6 +21,7 @@ public:
 
     QJsonObject obj;
     QString key;
+    QString work_path;
     bool delete_importfile = false;
 
 private:
