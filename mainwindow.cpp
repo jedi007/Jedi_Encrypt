@@ -176,18 +176,6 @@ void MainWindow::on_treeView_clicked(const QModelIndex &index)
 
     if(current_path.isEmpty()) return;
 
-    qDebug()<<"current_path: "<<current_path<<endl;
-
-    QFileInfo finfo(current_path);
-    if(finfo.isFile())
-    {
-        qDebug()<<"its file finfo.path():  "<<finfo.path()<<endl;
-        SystemConfig::getinstance()->work_path = finfo.path();
-    } else {
-        qDebug()<<"its dir finfo.path():  "<<finfo.path()<<endl;
-        SystemConfig::getinstance()->work_path = current_path;
-    }
-
     statusModel->setPath(current_path);
 }
 
